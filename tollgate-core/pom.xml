@@ -8,8 +8,8 @@
         <version>0.0.1</version>
         <relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
     </parent>
-    <artifactId>tollgate-model</artifactId>
-    <name>tollgate-model</name>
-    <description>Domain Models for Tollgate</description>
+    <artifactId>tollgate-core</artifactId>
+    <name>tollgate-core</name>
+    <description>Core for Tollgate</description>
 
 </project>

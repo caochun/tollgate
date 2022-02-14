@@ -75,7 +75,7 @@
 	<modules>
 		<module>vehicle-service</module>
 		<module>billing-service</module>
-		<module>tollgate-model</module>
+		<module>tollgate-core</module>
 	</modules>
 
 </project>

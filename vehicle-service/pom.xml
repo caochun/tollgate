@@ -15,7 +15,7 @@
 
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>tollgate-model</artifactId>
+            <artifactId>tollgate-core</artifactId>
             <version>0.0.1</version>
         </dependency>
         <dependency>
