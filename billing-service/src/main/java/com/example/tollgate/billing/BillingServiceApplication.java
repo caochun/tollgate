@@ -7,10 +7,10 @@ import org.springframework.context.annotation.Bean;
 import java.util.function.Consumer;
 
 @SpringBootApplication
-public class BillingApplication {
+public class BillingServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BillingApplication.class, args);
+        SpringApplication.run(BillingServiceApplication.class, args);
     }
 
     @Bean

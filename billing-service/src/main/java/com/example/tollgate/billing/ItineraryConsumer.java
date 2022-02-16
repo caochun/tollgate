@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.function.Consumer;
 
-@Component
+@Component("itineraryConsumer")
 public class ItineraryConsumer implements Consumer<Itinerary> {
 
     private BillingService billingService;

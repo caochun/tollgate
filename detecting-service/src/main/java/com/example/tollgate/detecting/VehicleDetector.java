@@ -12,7 +12,7 @@ public class VehicleDetector implements Supplier<Message> {
 
     @Override
     public Message get() {
-        return new Message(Entity.ANY.getId(), Message.Header.DETECT_VEHICLE, Vehicle.PLATE_HOLDER );
+        return new Message(Entity.ANY.getId(), Message.Header.COMMAND_VEHICLE, new Vehicle());
     }
 
 }

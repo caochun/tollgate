@@ -8,10 +8,10 @@ import org.springframework.context.annotation.Bean;
 import java.util.function.Supplier;
 
 @SpringBootApplication
-public class VehicleApplication {
+public class VehicleServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplicationBuilder builder = new SpringApplicationBuilder(VehicleApplication.class);
+        SpringApplicationBuilder builder = new SpringApplicationBuilder(VehicleServiceApplication.class);
         builder.headless(false);
         ConfigurableApplicationContext context = builder.run(args);
     }

@@ -1,43 +1,45 @@
 <?xml version="1.0"?>
-<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="approached">
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="nowhere">
 
-    <state id="approached">
-        <transition event="recognition_starts" target="recognizing" />
+    <state id="nowhere">
+        <transition event="detects" target="approached"/>
     </state>
 
-    <state id ="recognizing">
-        <transition event="recognition_fails" target="approached" />
-        <transition event="recognition_successes" target="recognized" />
+    <state id="approached">
+        <transition event="recognition_starts" target="recognizing"/>
+    </state>
+
+    <state id="recognizing">
+        <transition event="recognition_fails" target="approached"/>
+        <transition event="recognition_successes" target="recognized"/>
     </state>
 
     <state id="recognized">
-        <transition event="validation_starts" target="validating" />
+        <transition event="validation_starts" target="validating"/>
     </state>
 
-    <state id = "validating">
-        <transition event="validation_fails" target="recognized" />
-        <transition event="validation_successes." target="validated" />
+    <state id="validating">
+        <transition event="validation_fails" target="recognized"/>
+        <transition event="validation_successes." target="validated"/>
     </state>
 
     <state id="validated">
-        <transition event="billing_starts" target="billing" />
+        <transition event="billing_starts" target="billing"/>
     </state>
 
     <state id="billing">
-
-        <transition event="billing_fails" target="validated" />
-        <transition event="billing_successes." target="billed" />
-
+        <transition event="billing_fails" target="validated"/>
+        <transition event="billing_successes." target="billed"/>
     </state>
 
     <state id="billed">
-        <transition event="pay" target="paid" />
+        <transition event="pay" target="paid"/>
     </state>
 
     <state id="paid">
-        <transition event="leaving_detects" target="left" />
+        <transition event="leaving_detects" target="left"/>
     </state>
 
-    <final id="left" />
+    <final id="left"/>
 
 </scxml>

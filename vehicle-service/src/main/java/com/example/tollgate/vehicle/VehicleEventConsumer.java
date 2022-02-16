@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.function.Consumer;
 
 @Component("eventConsumer")
-public class EventConsumer implements Consumer<Message> {
+public class VehicleEventConsumer implements Consumer<Message> {
 
     private VehicleService vehicleService;
 
@@ -21,7 +21,7 @@ public class EventConsumer implements Consumer<Message> {
         if (message.getHeader().equals(Message.Header.COMMAND_VEHICLE))
             vehicleService.deliverMessage(message);
         else if (message.getHeader().equals(Message.Header.DETECT_VEHICLE))
-            vehicleService.registerVehicle(message.getBody());
+            vehicleService.registerVehicle();
     }
 
 }

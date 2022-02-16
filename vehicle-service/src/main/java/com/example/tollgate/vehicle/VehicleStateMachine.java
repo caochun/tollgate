@@ -11,11 +11,12 @@ import org.apache.commons.scxml2.model.ModelException;
 import org.apache.commons.scxml2.model.Transition;
 import org.apache.commons.scxml2.model.TransitionTarget;
 
-public class VehicleStateMachine extends AbstractStateMachine implements Vehicle {
+import java.util.UUID;
+
+public class VehicleStateMachine extends AbstractStateMachine implements Entity {
 
     public static final String SCXML_MODEL = "vehicle.xml";
 
-    private String vid;
 
     private Delegate delegate;
 
@@ -43,9 +44,23 @@ public class VehicleStateMachine extends AbstractStateMachine implements Vehicle
         });
     }
 
-    public VehicleStateMachine(String vid) throws ModelException {
+    private String id;
+
+    public VehicleStateMachine(Vehicle vehicle) throws ModelException {
         super(Vehicle.class.getClassLoader().getResource(SCXML_MODEL));
-        this.vid = vid;
+        this.id = UUID.randomUUID().toString();
+        this.vehicle = vehicle;
+
+    }
+
+    private Vehicle vehicle;
+
+    public Delegate getDelegate() {
+        return delegate;
+    }
+
+    public Vehicle getVehicle() {
+        return vehicle;
     }
 
     @Override
@@ -60,6 +75,6 @@ public class VehicleStateMachine extends AbstractStateMachine implements Vehicle
 
     @Override
     public String getId() {
-        return null;
+        return this.id;
     }
 }

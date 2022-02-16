@@ -2,9 +2,9 @@ package com.example.tollgate.model;
 
 import java.util.Random;
 
-public interface Vehicle extends Entity {
+public class Vehicle implements Entity {
 
-    public static String PLATE_HOLDER = "PLATE";
+    public static String PLATE_HOLDER = "中PLATE";
 
     public static String randomVehicleId() {
         char[] provinceAbbr = { // 省份简称 4+22+5+3
@@ -32,5 +32,22 @@ public interface Vehicle extends Entity {
         return vid;
     }
 
+    private String vid;
 
+    public Vehicle() {
+        this.vid = Vehicle.PLATE_HOLDER;
+    }
+
+    public void setId(String vid) {
+        this.vid = vid;
+    }
+
+    public void setRandomId() {
+        this.setId(Vehicle.randomVehicleId());
+    }
+
+    @Override
+    public String getId() {
+        return this.vid;
+    }
 }

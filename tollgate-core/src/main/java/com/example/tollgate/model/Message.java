@@ -5,12 +5,13 @@ import java.time.Instant;
 public class Message {
 
     public enum Header {
-        STATUS_VEHICLE, COMMAND_VEHICLE, DETECT_VEHICLE
+        STATUS_VEHICLE, COMMAND_VEHICLE
     }
 
     private String target;
     private Header header;
-    private String body;
+    private String payloadType;
+    private byte[] payload;
     private long timestamp;
 
     public String getTarget() {
@@ -21,8 +22,12 @@ public class Message {
         return this.header;
     }
 
-    public String getBody() {
-        return this.body;
+    public String getPayloadType() {
+        return this.payloadType;
+    }
+
+    public byte[] getPayload() {
+        return this.payload;
     }
 
     public long getTimestamp() {
