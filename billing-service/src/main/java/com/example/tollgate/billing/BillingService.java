@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class BillingService {
 
-    public Billable.Bill billing(Itinerary itinerary){
-        return new Billable.Bill();
+    public Billable.Bill billing(Itinerary itinerary) {
+        return Billable.Bill.randomBill();
     }
 
 }

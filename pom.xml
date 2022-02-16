@@ -23,6 +23,7 @@
         <module>vehicle-service</module>
         <module>billing-service</module>
         <module>tollgate-core</module>
+        <module>recognizing-service</module>
     </modules>
 
 

@@ -1,12 +1,21 @@
 package com.example.tollgate.binding;
 
+import com.example.tollgate.model.Entity;
+import com.example.tollgate.model.Message;
+import com.example.tollgate.model.Topic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CommandDelegate {
-    private final String BINDING_EVENT_OUT = "event-out";
+public class Delegate {
+
+    private Topic bindingTopic;
+
+    public Delegate(Topic bindingTopic) {
+        this.bindingTopic = bindingTopic;
+    }
+
 
     private StreamBridge streamBridge;
 
@@ -15,8 +24,8 @@ public class CommandDelegate {
         this.streamBridge = streamBridge;
     }
 
-    public void sendCommand(String command) {
-        this.streamBridge.send(BINDING_EVENT_OUT, command);
+    public boolean send(Message message) {
+        return this.streamBridge.send(bindingTopic.value, message);
     }
 
 }

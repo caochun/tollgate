@@ -1,21 +1,21 @@
-package com.example.tollgate.recogniting;
+package com.example.tollgate.recognizing;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
-@Controller
-public class RecognitingServiceApplication {
+@RestController
+public class RecognizingApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(RecognitingServiceApplication.class, args);
+        SpringApplication.run(RecognizingApplication.class, args);
     }
 
 
     @GetMapping("/")
-    public String get(){
+    public String get() {
         return "";
     }
 
