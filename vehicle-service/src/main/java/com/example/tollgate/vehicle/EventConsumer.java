@@ -20,6 +20,8 @@ public class EventConsumer implements Consumer<Message> {
     public void accept(Message message) {
         if (message.getHeader().equals(Message.Header.COMMAND_VEHICLE))
             vehicleService.deliverMessage(message);
+        else if (message.getHeader().equals(Message.Header.DETECT_VEHICLE))
+            vehicleService.registerVehicle(message.getBody());
     }
 
 }

@@ -24,6 +24,7 @@
         <module>billing-service</module>
         <module>tollgate-core</module>
         <module>recognizing-service</module>
+        <module>detecting-service</module>
     </modules>
 
 

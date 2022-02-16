@@ -8,18 +8,22 @@ import java.util.Map;
 @Repository
 public class VehicleRepository {
 
-    private Map<String, Vehicle> vehicleMap;
+    private Map<String, VehicleStateMachine> vehicleMap;
 
     public VehicleRepository() {
         this.vehicleMap = new HashMap<>();
     }
 
-    public Vehicle findVehicle(String vehicleId) {
+    public VehicleStateMachine findVehicle(String vehicleId) {
         return vehicleMap.get(vehicleId);
     }
 
-    public Vehicle saveVehicle(Vehicle vehicle) {
-        return vehicleMap.put(vehicle.getVehicleId(), vehicle);
+    public VehicleStateMachine saveVehicle(VehicleStateMachine vehicle) {
+        return vehicleMap.put(vehicle.getId(), vehicle);
+    }
+
+    public int vehicleCount(){
+        return this.vehicleMap.size();
     }
 
     public void deleteVehicle(String vehicleId) {

@@ -19,14 +19,15 @@ public class VehicleService {
     }
 
     public void deliverMessage(Message message) {
-        Vehicle v = vehicleRepository.findVehicle(message.getTarget());
+        VehicleStateMachine v = vehicleRepository.findVehicle(message.getTarget());
         if (v != null) v.fireEvent(message.getBody());
     }
 
-    public Vehicle registerVehicle(String vehicleId) {
+    public VehicleStateMachine registerVehicle(String vehicleId) {
         try {
-            Vehicle v = new Vehicle(vehicleId);
+            VehicleStateMachine v = new VehicleStateMachine(vehicleId);
             v.setDelegate(delegate);
+            System.out.println(this.vehicleRepository.vehicleCount());
             return vehicleRepository.saveVehicle(v);
         } catch (ModelException e) {
             e.printStackTrace();
