@@ -38,26 +38,17 @@ public class Message {
         this.target = target;
     }
 
-    public void setHeader(Header header) {
-        this.header = header;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
 
     public Message() {
 
     }
 
-    public Message(String target, Header header, String body) {
+    public Message(String target, Header header, String payloadType, byte[] payload) {
         this.target = target;
         this.header = header;
-        this.body = body;
+        this.payloadType = payloadType;
+        this.payload = payload;
+
         timestamp = Instant.now().getEpochSecond();
     }
 

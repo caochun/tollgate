@@ -18,6 +18,6 @@ public class RecognizingStateConsumer implements Consumer<Message> {
     @Override
     public void accept(Message message) {
         if (message.getHeader().equals(Message.Header.STATUS_VEHICLE))
-            recognizingService.recognize(message.getBody());
+            recognizingService.recognize(message.getPayload().toString());
     }
 }

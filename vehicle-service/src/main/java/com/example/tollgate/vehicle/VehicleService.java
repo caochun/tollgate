@@ -21,7 +21,7 @@ public class VehicleService {
 
     public void deliverMessage(Message message) {
         VehicleStateMachine v = vehicleRepository.findVehicle(message.getTarget());
-        if (v != null) v.fireEvent(message.getBody());
+        if (v != null) v.fireEvent(message.getPayload().toString());
     }
 
     public VehicleStateMachine registerVehicle() {

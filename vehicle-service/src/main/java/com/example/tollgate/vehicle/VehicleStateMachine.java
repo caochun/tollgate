@@ -28,7 +28,8 @@ public class VehicleStateMachine extends AbstractStateMachine implements Entity 
                 VehicleStateMachine.this.delegate.send(new Message(
                         Entity.ANY.getId(),
                         Message.Header.STATUS_VEHICLE,
-                        enterableState.getId())
+                        String.class.toString(),
+                        enterableState.getId().getBytes())
                 );
             }
 
