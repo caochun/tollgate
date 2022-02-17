@@ -1,5 +1,6 @@
 package com.example.tollgate.recognizing;
 
+import com.example.tollgate.channel.VehicleContextConsumer;
 import com.example.tollgate.model.HeartBeat;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.SpringApplication;
@@ -16,6 +17,11 @@ public class RecognizingServiceApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(RecognizingServiceApplication.class, args);
+    }
+
+    @Bean
+    public VehicleContextConsumer vehicleStateConsumer(){
+        return new VehicleContextConsumer();
     }
 
     @Bean
