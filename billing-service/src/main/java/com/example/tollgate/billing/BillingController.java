@@ -1,9 +1,8 @@
 package com.example.tollgate.billing;
 
 
-import com.example.tollgate.model.Billable;
+import com.example.tollgate.model.Bill;
 import com.example.tollgate.model.Itinerary;
-import jdk.jfr.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,7 +23,7 @@ public class BillingController {
     }
 
     @GetMapping("/billing")
-    public ResponseEntity<Billable.Bill> getBill(@RequestBody Itinerary itinerary) {
+    public ResponseEntity<Bill> getBill(@RequestBody Itinerary itinerary) {
         final HttpHeaders httpHeaders= new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(billingService.billing(itinerary), httpHeaders, HttpStatus.OK);

@@ -1,29 +1,32 @@
 package com.example.tollgate.vehicle;
 
+import com.example.tollgate.channel.VehicleContextConsumer;
 import com.example.tollgate.model.HeartBeat;
-import org.apache.commons.logging.LogFactory;
+import com.example.tollgate.model.MessageBuilder;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.messaging.Message;
 
 import java.util.function.Supplier;
 
 @SpringBootApplication
+@ComponentScan("com.example.tollgate")
 public class VehicleServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplicationBuilder builder = new SpringApplicationBuilder(VehicleServiceApplication.class);
-        builder.headless(false);
-        ConfigurableApplicationContext context = builder.run(args);
+        SpringApplication.run(VehicleServiceApplication.class, args);
+    }
+
+
+    @Bean
+    public VehicleContextConsumer vehicleTransitionConsumer(){
+        return new VehicleContextConsumer();
     }
 
     @Bean
     public Supplier<Message<?>> heartbeat() {
-        return () -> {
-            LogFactory.getLog(VehicleServiceApplication.class).info("Sending heartbeat");
-            return new HeartBeat("billing").toMessage();
-        };
+        return () -> MessageBuilder.buildMessage(new HeartBeat());
     }
 }

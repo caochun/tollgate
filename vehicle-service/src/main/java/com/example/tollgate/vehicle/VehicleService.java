@@ -1,15 +1,18 @@
 package com.example.tollgate.vehicle;
 
-import com.example.tollgate.binding.Delegate;
-import com.example.tollgate.model.Topic;
-import com.example.tollgate.model.Transmittable;
-import com.example.tollgate.model.Vehicle;
+import com.example.tollgate.channel.VehicleContext;
+import com.example.tollgate.model.*;
+import org.apache.commons.scxml2.SCXMLListener;
+import org.apache.commons.scxml2.model.EnterableState;
 import org.apache.commons.scxml2.model.ModelException;
+import org.apache.commons.scxml2.model.Transition;
+import org.apache.commons.scxml2.model.TransitionTarget;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
 @Service
-public class VehicleService {
+public class VehicleService implements TollgateService {
 
     private VehicleRepository vehicleRepository;
 
@@ -18,24 +21,63 @@ public class VehicleService {
         this.vehicleRepository = vehicleRepository;
     }
 
-    public void deliverMessage(Transmittable message) {
-        //TODO
-//        VehicleStateMachine v = vehicleRepository.findVehicle(message.getTarget());
-//        if (v != null) v.fireEvent(message.getPayload().toString());
+    private StreamBridge streamBridge;
+
+    @Autowired
+    public void setStreamBridge(StreamBridge streamBridge) {
+        this.streamBridge = streamBridge;
     }
 
-    public VehicleStateMachine registerVehicle() {
+    public VehicleStateMachine registerVehicle(Vehicle vehicle) {
+
+        VehicleStateMachine v;
+
         try {
-            VehicleStateMachine v = new VehicleStateMachine(new Vehicle());
-            v.setDelegate(delegate);
-            v.fireEvent("detects");
-            System.out.println(this.vehicleRepository.vehicleCount());
-            return vehicleRepository.saveVehicle(v);
+            v = new VehicleStateMachine(vehicle);
         } catch (ModelException e) {
             e.printStackTrace();
             return null;
         }
+
+        v.getEngine().addListener(v.getEngine().getStateMachine(), new SCXMLListener() {
+            @Override
+            public void onEntry(EnterableState enterableState) {
+                streamBridge.send(VehicleContext.DESTINATION_STATE,
+                        MessageBuilder.buildMessage(
+                                VehicleContext.generateVehicleState(v.getVehicle(), enterableState.getId())));
+            }
+
+            @Override
+            public void onExit(EnterableState enterableState) {
+
+            }
+
+            @Override
+            public void onTransition(TransitionTarget transitionTarget, TransitionTarget transitionTarget1, Transition transition, String s) {
+
+            }
+        });
+        v.init();
+        return this.vehicleRepository.saveVehicleStateMachine(v);
+
     }
 
-    private Delegate delegate = new Delegate(Topic.STATE);
+    @Override
+    public void accept(VehicleContext context) {
+        if (!context.isState()) {
+            if (context.getContext().equals("start")) {    //we currently treat vehicle detection in an ad hoc manner
+                this.registerVehicle(context.getVehicle());
+            } else {
+                vehicleRepository.findVehicleStateMachineByVehicleId(context.getVehicle().getId()).fireEvent(context.getContext());
+            }
+        } else {
+            //otherwise, just ignore
+        }
+
+
+    }
+
+    public int count() {
+        return this.vehicleRepository.vehicleCount();
+    }
 }

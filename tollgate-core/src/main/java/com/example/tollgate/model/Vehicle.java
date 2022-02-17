@@ -2,7 +2,7 @@ package com.example.tollgate.model;
 
 import java.util.Random;
 
-public class Vehicle implements Entity {
+public class Vehicle extends TollgateEntity {
 
     public static String PLATE_HOLDER = "中PLATE";
 
@@ -32,22 +32,19 @@ public class Vehicle implements Entity {
         return vid;
     }
 
-    private String vid;
+    private String plate;
 
     public Vehicle() {
-        this.vid = Vehicle.PLATE_HOLDER;
+        super();
+        this.plate = Vehicle.PLATE_HOLDER;
     }
 
-    public void setId(String vid) {
-        this.vid = vid;
+    public void setPlate(String plate) {
+        this.plate = plate;
     }
 
-    public void setRandomId() {
-        this.setId(Vehicle.randomVehicleId());
+    public void setRandomPlate() {
+        this.setPlate(Vehicle.randomVehicleId());
     }
 
-    @Override
-    public String getId() {
-        return this.vid;
-    }
 }

@@ -1,5 +1,6 @@
 package com.example.tollgate.vehicle;
 
+import com.example.tollgate.model.VehicleStateMachine;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -14,19 +15,19 @@ public class VehicleRepository {
         this.vehicleMap = new HashMap<>();
     }
 
-    public VehicleStateMachine findVehicle(String vehicleId) {
+    public VehicleStateMachine findVehicleStateMachineByVehicleId(String vehicleId) {
         return vehicleMap.get(vehicleId);
     }
 
-    public VehicleStateMachine saveVehicle(VehicleStateMachine vehicle) {
-        return vehicleMap.put(vehicle.getId(), vehicle);
+    public VehicleStateMachine saveVehicleStateMachine(VehicleStateMachine vehicleStateMachine) {
+        return vehicleMap.put(vehicleStateMachine.getVehicle().getId(), vehicleStateMachine);
     }
 
-    public int vehicleCount(){
+    public int vehicleCount() {
         return this.vehicleMap.size();
     }
 
-    public void deleteVehicle(String vehicleId) {
+    public void deleteVehicleStateMachineByVehicleId(String vehicleId) {
         this.vehicleMap.remove(vehicleId);
     }
 

@@ -7,12 +7,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Itinerary implements Transmittable{
-
-    @Override
-    public String getTarget() {
-        return null;
-    }
+public class Itinerary extends TollgateEntity {
 
     @Data
     @NoArgsConstructor
