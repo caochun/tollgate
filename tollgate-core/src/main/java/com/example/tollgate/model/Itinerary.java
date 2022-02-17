@@ -1,12 +1,24 @@
 package com.example.tollgate.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Itinerary {
+public class Itinerary implements Transmittable{
 
+    @Override
+    public String getTarget() {
+        return null;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public class ItineraryStop {
-
+        private String stop;
     }
 
     private List<ItineraryStop> stops;

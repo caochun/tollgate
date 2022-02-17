@@ -1,10 +1,10 @@
 package com.example.tollgate.binding;
 
-import com.example.tollgate.model.Entity;
-import com.example.tollgate.model.Message;
 import com.example.tollgate.model.Topic;
+import com.example.tollgate.model.Transmittable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,7 +25,7 @@ public class Delegate {
     }
 
     public boolean send(Message message) {
-        return this.streamBridge.send(bindingTopic.value, message);
+        return this.streamBridge.send(bindingTopic.value, message.toString());
     }
 
 }

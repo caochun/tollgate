@@ -1,6 +1,6 @@
 package com.example.tollgate.vehicle;
 
-import com.example.tollgate.model.Message;
+import org.apache.logging.log4j.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,10 +18,10 @@ public class VehicleEventConsumer implements Consumer<Message> {
 
     @Override
     public void accept(Message message) {
-        if (message.getHeader().equals(Message.Header.COMMAND_VEHICLE))
-            vehicleService.deliverMessage(message);
-        else if (message.getHeader().equals(Message.Header.STATUS_VEHICLE))
-            vehicleService.registerVehicle();
+//        if (message.getHeader().equals(Messaging.Header.COMMAND_VEHICLE))
+//            vehicleService.deliverMessage(message);
+//        else if (message.getHeader().equals(Messaging.Header.STATUS_VEHICLE))
+//            vehicleService.registerVehicle();
     }
 
 }

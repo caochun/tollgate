@@ -1,5 +1,6 @@
 package com.example.tollgate.billing;
 
+import com.example.tollgate.model.HeartBeat;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,7 +17,7 @@ public class BillingServiceApplication {
     }
 
     @Bean
-    public Consumer<Message<String>> heartbeatConsumer() {
-        return message -> LogFactory.getLog(BillingServiceApplication.class).info("Received " + message.getPayload());
+    public Consumer<Message<HeartBeat>> heartbeatConsumer() {
+        return message -> LogFactory.getLog(BillingServiceApplication.class).info("Received " + message.getPayload().getTimestamp());
     }
 }

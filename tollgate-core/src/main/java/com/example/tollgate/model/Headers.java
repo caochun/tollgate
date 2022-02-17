@@ -1,6 +1,7 @@
 package com.example.tollgate.model;
 
-public class Header {
+public class Headers {
+
 
     public static final String CONTENT_TYPE = "content-type";
     public static final String HEARTBEAT= "heartbeat";
