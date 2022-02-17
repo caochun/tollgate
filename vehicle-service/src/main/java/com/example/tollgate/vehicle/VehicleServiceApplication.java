@@ -7,7 +7,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
 
 import java.util.function.Supplier;
 
@@ -21,10 +20,10 @@ public class VehicleServiceApplication {
     }
 
     @Bean
-    public Supplier<Message<HeartBeat>> heartbeat() {
+    public Supplier<Message<?>> heartbeat() {
         return () -> {
             LogFactory.getLog(VehicleServiceApplication.class).info("Sending heartbeat");
-            return  new HeartBeat("billing").toMessage();
+            return new HeartBeat("billing").toMessage();
         };
     }
 }

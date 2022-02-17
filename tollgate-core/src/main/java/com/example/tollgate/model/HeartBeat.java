@@ -2,27 +2,17 @@ package com.example.tollgate.model;
 
 import java.time.Instant;
 
-public class HeartBeat implements Transmittable {
+public class HeartBeat extends TollgateMessage {
 
 
     private String timestamp = Instant.now().toString();
 
-    private String target;
-
     public HeartBeat(String target) {
-        this.target = target;
+        super(target);
     }
 
     public String getTimestamp() {
         return this.timestamp;
     }
 
-    public HeartBeat() {
-        this(CHAR_WILDCARD);
-    }
-
-    @Override
-    public String getTarget() {
-        return this.target;
-    }
 }
