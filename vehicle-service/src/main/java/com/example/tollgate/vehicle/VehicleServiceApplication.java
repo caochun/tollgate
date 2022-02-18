@@ -25,8 +25,8 @@ public class VehicleServiceApplication {
         return new VehicleContextConsumer();
     }
 
-    @Bean
-    public Supplier<Message<?>> heartbeat() {
-        return () -> MessageBuilder.buildMessage(new HeartBeat());
-    }
+//    @Bean
+//    public Supplier<Message<?>> heartbeat() {
+//        return () -> MessageBuilder.buildMessage(new HeartBeat());
+//    }
 }

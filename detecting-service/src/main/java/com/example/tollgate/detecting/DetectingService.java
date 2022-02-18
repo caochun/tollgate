@@ -20,7 +20,7 @@ public class DetectingService {
     public boolean detect() {
         streamBridge.send(VehicleContext.DESTINATION_TRANSITION,
                 MessageBuilder.buildMessage(
-                        VehicleContext.generateVehicleTransition(new Vehicle(), "start")));
+                        VehicleContext.generateVehicleTransition(new Vehicle(), "detects")));
         return true;
     }
 }

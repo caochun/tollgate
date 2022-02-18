@@ -1,13 +1,14 @@
 package com.example.tollgate.vehicle;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -25,5 +26,22 @@ public class VehicleController {
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(Integer.valueOf(this.vehicleService.count()), httpHeaders, HttpStatus.OK);
+    }
+
+    private StreamBridge streamBridge;
+
+    @Autowired
+    public void setStreamBridge(StreamBridge streamBridge) {
+        this.streamBridge = streamBridge;
+    }
+
+
+    @GetMapping("r")
+    public void r() {
+
+
+        Message<String> message = MessageBuilder.withPayload("heartbeat").setHeader("state", "all").build();
+
+        streamBridge.send("vehicle.heartbeat", message);
     }
 }

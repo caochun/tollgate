@@ -9,8 +9,10 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 public class VehicleContext extends TollgateEntity {
 
+
     public static final String DESTINATION_TRANSITION = "vehicle.transition";
     public static final String DESTINATION_STATE = "vehicle.state";
+
 
     private String context;
 

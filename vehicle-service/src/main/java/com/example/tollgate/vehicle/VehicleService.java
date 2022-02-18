@@ -44,7 +44,8 @@ public class VehicleService implements TollgateService {
             public void onEntry(EnterableState enterableState) {
                 streamBridge.send(VehicleContext.DESTINATION_STATE,
                         MessageBuilder.buildMessage(
-                                VehicleContext.generateVehicleState(v.getVehicle(), enterableState.getId())));
+                                VehicleContext.generateVehicleState(v.getVehicle(), "state."+enterableState.getId()))
+                );
             }
 
             @Override
@@ -65,7 +66,7 @@ public class VehicleService implements TollgateService {
     @Override
     public void accept(VehicleContext context) {
         if (!context.isState()) {
-            if (context.getContext().equals("start")) {    //we currently treat vehicle detection in an ad hoc manner
+            if (context.getContext().equals("detects")) {    //we currently treat vehicle detection in an ad hoc manner
                 this.registerVehicle(context.getVehicle());
             } else {
                 vehicleRepository.findVehicleStateMachineByVehicleId(context.getVehicle().getId()).fireEvent(context.getContext());

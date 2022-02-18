@@ -1,9 +1,11 @@
 package com.example.tollgate.recognizing;
 
 import com.example.tollgate.channel.VehicleContext;
+import com.example.tollgate.channel.VehicleContextConsumer;
 import com.example.tollgate.model.MessageBuilder;
 import com.example.tollgate.model.TollgateService;
 import com.example.tollgate.model.Vehicle;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
@@ -68,10 +70,8 @@ public class RecognizingService implements TollgateService {
     public void accept(VehicleContext context) {
 
         if (context.isState()) { //actually it must be
-
+            LogFactory.getLog(RecognizingService.class).info("handling vehicle " + context.getVehicle().getId() + " at state " + context.getContext());
             this.recognize(context.getVehicle());
-
-
         } else {
             //otherwise, just ignore
         }
