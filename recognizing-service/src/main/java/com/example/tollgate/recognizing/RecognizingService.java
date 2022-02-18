@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class RecognizingService implements TollgateService {
 
@@ -24,14 +27,11 @@ public class RecognizingService implements TollgateService {
         return vehicle;
     }
 
-    public Vehicle[] getUnconfirmedVehicles() {
-        Object[] objects = this.resultRepository.getAllResults().stream().filter(r -> !r.isConfirmed()).toArray();
-        Vehicle[] v = new Vehicle[objects.length];
-
-        for (int i = 0; i < v.length; i++) {
-            v[i] = (Vehicle) objects[i];
-        }
-        return v;
+    public List<Vehicle> getUnconfirmedVehicles() {
+        return this.resultRepository.getAllResults().stream()
+                .filter(r -> !r.isConfirmed())
+                .map(r -> r.getVehicle())
+                .collect(Collectors.toList());
     }
 
     public void confirm(Vehicle vehicle) {
