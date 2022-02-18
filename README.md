@@ -59,8 +59,8 @@
 
 系统中各服务以消息驱动的方式协同运行，业务流程大体入下：
 
-1. 车辆进入收费站（车道），假设存在一个`DetectingService`可感知这一过程（例如基于计算机视觉技术或通过RFID读取通行介质识别车辆到来），该服务发送一个`start`消息；
-2. `start`消息由`VehicleService`为该车辆创建一个`VehicleStateMachine`对象，`VehicleService`再向该新创建的状态机对象转发`start`消息（此处存在一个特殊处理：因一辆新到车辆对应的状态机对象并不现成存在，所以本应驱动新来车辆状态进入正式业务阶段的`start`消息被用作触发状态机对象生成，然后再有`VehicleService`重发了一遍）；
+1. 车辆进入收费站（车道），假设存在一个`DetectingService`可感知这一过程（例如基于计算机视觉技术或通过RFID读取通行介质识别车辆到来），该服务发送一个`start`消息（该过程当前由用户访问 http://localhost:8070/detect 触发）；
+2. `start`消息由`VehicleService`为该车辆创建一个`VehicleStateMachine`对象（用户可访问 http://localhost:8080/vehicles 查看当前所管理车辆，当前仅简单实现该接口返回在管理车辆数量），`VehicleService`再向该新创建的状态机对象转发`start`消息（此处存在一个特殊处理：因一辆新到车辆对应的状态机对象并不现成存在，所以本应驱动新来车辆状态进入正式业务阶段的`start`消息被用作触发状态机对象生成，然后再有`VehicleService`重发了一遍）；
 3. 车辆状态机收到`start`消息后进入`recognizing`状态等待识别，进入该状态时`VehicleService`发出状态消息，该消息由`RecognizingService`接收，触发识别业务，并将识别结果保存在其内部；
 4. 用户可通过向`RecognizingService`的Web接口发送请求查看识别结果（ http://localhost:8090/unconfirmed ），并确认识别结果正确（ http://localhost:8090/confirm?id=xxxxxx ）或确认识别错误（该接口暂未实现），相应地发送`recognition_successes`或`recognition_fails`消息；
 5. `VehicleService`收到消息后驱动车辆状态发生变化，发送状态消息，以此往复。
