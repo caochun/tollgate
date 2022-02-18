@@ -25,6 +25,7 @@
         <module>tollgate-core</module>
         <module>recognizing-service</module>
         <module>detecting-service</module>
+        <module>validating-service</module>
     </modules>
 
 
