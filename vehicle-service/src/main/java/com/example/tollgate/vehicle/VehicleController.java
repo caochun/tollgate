@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -28,20 +29,4 @@ public class VehicleController {
         return new ResponseEntity<>(Integer.valueOf(this.vehicleService.count()), httpHeaders, HttpStatus.OK);
     }
 
-    private StreamBridge streamBridge;
-
-    @Autowired
-    public void setStreamBridge(StreamBridge streamBridge) {
-        this.streamBridge = streamBridge;
-    }
-
-
-    @GetMapping("r")
-    public void r() {
-
-
-        Message<String> message = MessageBuilder.withPayload("heartbeat").setHeader("state", "all").build();
-
-        streamBridge.send("vehicle.heartbeat", message);
-    }
 }

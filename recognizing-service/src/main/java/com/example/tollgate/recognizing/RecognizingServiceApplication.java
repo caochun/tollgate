@@ -20,12 +20,12 @@ public class RecognizingServiceApplication {
     }
 
     @Bean
-    public VehicleContextConsumer vehicleStateConsumer(){
+    public VehicleContextConsumer vehicleStateConsumer() {
         return new VehicleContextConsumer();
     }
 
     @Bean
-    public Consumer<Message<HeartBeat>> heartbeatConsumer() {
-        return message -> LogFactory.getLog(RecognizingServiceApplication.class).info("Received " + message.getPayload().getTimestamp());
+    public Consumer<Message<String>> heartbeatConsumer() {
+        return message -> LogFactory.getLog(RecognizingServiceApplication.class).info("Received " + message.getPayload());
     }
 }

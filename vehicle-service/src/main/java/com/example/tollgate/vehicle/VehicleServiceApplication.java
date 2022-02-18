@@ -2,7 +2,7 @@ package com.example.tollgate.vehicle;
 
 import com.example.tollgate.channel.VehicleContextConsumer;
 import com.example.tollgate.model.HeartBeat;
-import com.example.tollgate.model.MessageBuilder;
+import com.example.tollgate.model.TollgateMessageBuilder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -21,12 +21,12 @@ public class VehicleServiceApplication {
 
 
     @Bean
-    public VehicleContextConsumer vehicleTransitionConsumer(){
+    public VehicleContextConsumer vehicleTransitionConsumer() {
         return new VehicleContextConsumer();
     }
 
 //    @Bean
 //    public Supplier<Message<?>> heartbeat() {
-//        return () -> MessageBuilder.buildMessage(new HeartBeat());
+//        return () -> TollgateMessageBuilder.buildHeartBeat(VehicleServiceApplication.class.getCanonicalName());
 //    }
 }

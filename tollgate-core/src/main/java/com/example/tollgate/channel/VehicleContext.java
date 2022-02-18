@@ -10,8 +10,8 @@ import lombok.EqualsAndHashCode;
 public class VehicleContext extends TollgateEntity {
 
 
-    public static final String DESTINATION_TRANSITION = "vehicle.transition";
-    public static final String DESTINATION_STATE = "vehicle.state";
+    public static final String BINDING_TRANSITION = "vehicle-transition";
+    public static final String BINDING_STATE = "vehicle-state";
 
 
     private String context;

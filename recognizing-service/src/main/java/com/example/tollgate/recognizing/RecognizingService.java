@@ -1,8 +1,7 @@
 package com.example.tollgate.recognizing;
 
 import com.example.tollgate.channel.VehicleContext;
-import com.example.tollgate.channel.VehicleContextConsumer;
-import com.example.tollgate.model.MessageBuilder;
+import com.example.tollgate.model.TollgateMessageBuilder;
 import com.example.tollgate.model.TollgateService;
 import com.example.tollgate.model.Vehicle;
 import org.apache.commons.logging.LogFactory;
@@ -14,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class RecognizingService implements TollgateService {
+public class RecognizingService extends TollgateService {
 
     private ResultRepository resultRepository;
 
@@ -38,33 +37,23 @@ public class RecognizingService implements TollgateService {
 
     public void confirm(Vehicle vehicle) {
         this.resultRepository.setConfirmResult(vehicle, true);
-        streamBridge.send(VehicleContext.DESTINATION_TRANSITION,
-                MessageBuilder.buildMessage(
-                        VehicleContext.generateVehicleTransition(vehicle, "recognition_successes")));
+        this.sendVehicleTransition(vehicle,"recognition_successes");
     }
 
     public void confirm(String vehicleId) {
-        RecognizingResult r = this.resultRepository.setConfirmResultById(vehicleId, true);
-        streamBridge.send(VehicleContext.DESTINATION_TRANSITION,
-                MessageBuilder.buildMessage(
-                        VehicleContext.generateVehicleTransition(r.getVehicle(), "recognition_successes")));
+        RecognizingResult r = this.resultRepository.getResultById(vehicleId);
+        this.confirm(r.getVehicle());
+    }
+
+    public void unconfirm(Vehicle vehicle){
+        this.resultRepository.setConfirmResult(vehicle, false);
+        this.sendVehicleTransition(vehicle,"recognition_fails");
     }
 
     public void unconfirm(String vehicleId) {
-        RecognizingResult r = this.resultRepository.setConfirmResultById(vehicleId, false);
-        streamBridge.send(VehicleContext.DESTINATION_TRANSITION,
-                MessageBuilder.buildMessage(
-                        VehicleContext.generateVehicleTransition(r.getVehicle(), "recognition_fails")));
+        RecognizingResult r = this.resultRepository.getResultById(vehicleId);
+       this.unconfirm(r.getVehicle());
     }
-
-
-    private StreamBridge streamBridge;
-
-    @Autowired
-    public void setStreamBridge(StreamBridge streamBridge) {
-        this.streamBridge = streamBridge;
-    }
-
 
     @Override
     public void accept(VehicleContext context) {

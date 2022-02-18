@@ -1,12 +1,8 @@
 <?xml version="1.0"?>
-<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="nowhere">
-
-    <state id="nowhere">
-        <transition event="detects" target="approached"/>
-    </state>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="approached">
 
     <state id="approached">
-        <transition event="recognition_starts" target="recognizing"/>
+        <transition event="start" target="recognizing"/>
     </state>
 
     <state id="recognizing">
@@ -29,7 +25,7 @@
 
     <state id="billing">
         <transition event="billing_fails" target="validated"/>
-        <transition event="billing_successes." target="billed"/>
+        <transition event="billing_successes" target="billed"/>
     </state>
 
     <state id="billed">

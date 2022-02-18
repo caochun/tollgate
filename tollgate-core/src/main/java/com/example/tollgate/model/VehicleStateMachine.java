@@ -21,16 +21,11 @@ public class VehicleStateMachine extends AbstractStateMachine {
 
     @Override
     public boolean invoke(String methodName) {
-        this.getLog().info(methodName);
+//        this.getLog().info(this.vehicle.getId() + "in state :" + methodName);
         return true;
     }
 
     public boolean init() {
-        return this.fireEvent("detects");
+        return this.fireEvent("start");
     }
-
-    public Object[] getStates() {
-        return this.getEngine().getStateMachine().getChildren().stream().map(TransitionTarget::getId).toArray();
-    }
-
 }

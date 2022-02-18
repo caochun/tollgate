@@ -18,10 +18,6 @@ public class VehicleContextConsumer implements Consumer<VehicleContext> {
 
     @Override
     public void accept(VehicleContext vehicleContext) {
-        LogFactory.getLog(VehicleContextConsumer.class).info(vehicleContext.getVehicle().getId()
-                                                                .concat((vehicleContext.isState() ? " entering state: " : " transition fired: " )
-                                                                        .concat(vehicleContext.getContext())));
-
         tollgateService.accept(vehicleContext);
     }
 }

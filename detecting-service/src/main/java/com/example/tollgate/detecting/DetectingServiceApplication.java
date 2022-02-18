@@ -17,12 +17,8 @@ public class DetectingServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(DetectingServiceApplication.class, args);
     }
-//
-//    @Bean
-//    public Consumer<Message<HeartBeat>> heartbeatConsumer() {
-//        return message -> LogFactory.getLog(DetectingServiceApplication.class).info("Received " + message.getPayload().getTimestamp());
-//    }
-        @Bean
+
+    @Bean
     public Consumer<Message<String>> heartbeatConsumer() {
         return message -> LogFactory.getLog(DetectingServiceApplication.class).info("Received " + message.getPayload());
     }

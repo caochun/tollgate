@@ -7,25 +7,18 @@ import org.apache.commons.scxml2.model.EnterableState;
 import org.apache.commons.scxml2.model.ModelException;
 import org.apache.commons.scxml2.model.Transition;
 import org.apache.commons.scxml2.model.TransitionTarget;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
 @Service
-public class VehicleService implements TollgateService {
+public class VehicleService extends TollgateService {
 
     private VehicleRepository vehicleRepository;
 
     @Autowired
     public void setVehicleRepository(VehicleRepository vehicleRepository) {
         this.vehicleRepository = vehicleRepository;
-    }
-
-    private StreamBridge streamBridge;
-
-    @Autowired
-    public void setStreamBridge(StreamBridge streamBridge) {
-        this.streamBridge = streamBridge;
     }
 
     public VehicleStateMachine registerVehicle(Vehicle vehicle) {
@@ -42,10 +35,8 @@ public class VehicleService implements TollgateService {
         v.getEngine().addListener(v.getEngine().getStateMachine(), new SCXMLListener() {
             @Override
             public void onEntry(EnterableState enterableState) {
-                streamBridge.send(VehicleContext.DESTINATION_STATE,
-                        MessageBuilder.buildMessage(
-                                VehicleContext.generateVehicleState(v.getVehicle(), "state."+enterableState.getId()))
-                );
+                LoggerFactory.getLogger(VehicleService.class).info(v.getVehicle().getId() + " in state: " + enterableState.getId());
+                VehicleService.this.sendVehicleState(v.getVehicle(), enterableState.getId());
             }
 
             @Override
@@ -55,7 +46,7 @@ public class VehicleService implements TollgateService {
 
             @Override
             public void onTransition(TransitionTarget transitionTarget, TransitionTarget transitionTarget1, Transition transition, String s) {
-
+                LoggerFactory.getLogger(VehicleService.class).info(v.getVehicle().getId() + " transition fired: " + s);
             }
         });
         v.init();
@@ -66,10 +57,13 @@ public class VehicleService implements TollgateService {
     @Override
     public void accept(VehicleContext context) {
         if (!context.isState()) {
-            if (context.getContext().equals("detects")) {    //we currently treat vehicle detection in an ad hoc manner
+            if (context.getContext().equals("start")) {    //we currently treat vehicle detection in an ad hoc manner
                 this.registerVehicle(context.getVehicle());
             } else {
-                vehicleRepository.findVehicleStateMachineByVehicleId(context.getVehicle().getId()).fireEvent(context.getContext());
+                VehicleStateMachine vsm = vehicleRepository.findVehicleStateMachineByVehicleId(context.getVehicle().getId());
+                if (vsm != null) {
+                    vsm.fireEvent(context.getContext());
+                }
             }
         } else {
             //otherwise, just ignore
