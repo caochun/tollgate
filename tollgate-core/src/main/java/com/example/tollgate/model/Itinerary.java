@@ -1,24 +1,13 @@
 package com.example.tollgate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Itinerary extends TollgateEntity {
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public class ItineraryStop {
-        private String stop;
-    }
+    private List<String> stops;
 
-    private List<ItineraryStop> stops;
-
-    public Itinerary(List<ItineraryStop> stops) {
+    public Itinerary(List<String> stops) {
         this.stops = stops;
     }
 
@@ -26,7 +15,7 @@ public class Itinerary extends TollgateEntity {
         this.stops = new ArrayList<>();
     }
 
-    public void addItineraryStop(ItineraryStop stop) {
+    public void addItineraryStop(String stop) {
         if (this.stops == null) {
             this.stops = new ArrayList<>();
         }
@@ -34,7 +23,7 @@ public class Itinerary extends TollgateEntity {
         this.stops.add(stop);
     }
 
-    public List<ItineraryStop> getItineraryStops() {
+    public List<String> getItineraryStops() {
         return this.stops;
     }
 
