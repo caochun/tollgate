@@ -79,19 +79,25 @@ public class VehicleService extends TollgateService {
         return this.vehicleRepository.findAll();
     }
 
+    private void handleVehicleTransition(VehicleContext vehicleContext) {
+
+        VehicleStateMachine vsm = vehicleRepository.findVehicleStateMachineByVehicleId(vehicleContext.getVehicle().getId());
+        if (vsm != null) {
+            vsm.fireEvent(vehicleContext.getContext());
+
+            if (vehicleContext.getContext().equals("recognition_successes")) {
+                vehicleRepository.saveVehicle(vehicleContext.getVehicle());
+            } else {
+                //TODO
+            }
+        }
+    }
+
 
     @Override
     public void accept(VehicleContext context) {
         if (!context.isState()) {
-            VehicleStateMachine vsm = vehicleRepository.findVehicleStateMachineByVehicleId(context.getVehicle().getId());
-            if (vsm != null) {
-
-                vsm.fireEvent(context.getContext());
-
-                if (context.getContext().equals("recognition_successes")) {
-                    vehicleRepository.saveVehicle(context.getVehicle());
-                }
-            }
+            handleVehicleTransition(context);
         } else {
             //otherwise, just ignore
         }
