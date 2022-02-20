@@ -1,9 +1,11 @@
 package com.example.tollgate.model;
 
+import com.example.tollgate.serialization.VehicleStateMachineSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.scxml2.env.AbstractStateMachine;
 import org.apache.commons.scxml2.model.ModelException;
-import org.apache.commons.scxml2.model.TransitionTarget;
 
+@JsonSerialize(using = VehicleStateMachineSerializer.class)
 public class VehicleStateMachine extends AbstractStateMachine {
 
     public static final String SCXML_MODEL = "vehicle.xml";
@@ -19,13 +21,13 @@ public class VehicleStateMachine extends AbstractStateMachine {
         return vehicle;
     }
 
+    public void setVehicle(Vehicle vehicle){
+        this.vehicle = vehicle;
+    }
+
     @Override
     public boolean invoke(String methodName) {
 //        this.getLog().info(this.vehicle.getId() + "in state :" + methodName);
         return true;
-    }
-
-    public boolean init() {
-        return this.fireEvent("start");
     }
 }

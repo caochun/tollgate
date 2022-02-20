@@ -28,4 +28,9 @@ public class RecognizingController {
     public void confirm(@RequestParam(name = "id") String vid) {
         this.recognizingService.confirm(vid);
     }
+
+    @GetMapping("/unconfirm")
+    public void unconfirm(@RequestParam(name = "id") String vid) {
+        this.recognizingService.unconfirm(vid);
+    }
 }

@@ -24,9 +24,5 @@ public class VehicleServiceApplication {
     public VehicleContextConsumer vehicleTransitionConsumer() {
         return new VehicleContextConsumer();
     }
-
-//    @Bean
-//    public Supplier<Message<?>> heartbeat() {
-//        return () -> TollgateMessageBuilder.buildHeartBeat(VehicleServiceApplication.class.getCanonicalName());
-//    }
+    
 }

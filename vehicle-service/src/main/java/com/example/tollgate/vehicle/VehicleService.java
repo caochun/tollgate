@@ -1,7 +1,9 @@
 package com.example.tollgate.vehicle;
 
 import com.example.tollgate.channel.VehicleContext;
-import com.example.tollgate.model.*;
+import com.example.tollgate.model.TollgateService;
+import com.example.tollgate.model.Vehicle;
+import com.example.tollgate.model.VehicleStateMachine;
 import org.apache.commons.scxml2.SCXMLListener;
 import org.apache.commons.scxml2.model.EnterableState;
 import org.apache.commons.scxml2.model.ModelException;
@@ -10,6 +12,8 @@ import org.apache.commons.scxml2.model.TransitionTarget;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class VehicleService extends TollgateService {
@@ -21,7 +25,8 @@ public class VehicleService extends TollgateService {
         this.vehicleRepository = vehicleRepository;
     }
 
-    public VehicleStateMachine registerVehicle(Vehicle vehicle) {
+
+    public void registerVehicle(Vehicle vehicle) {
 
         VehicleStateMachine v;
 
@@ -29,7 +34,7 @@ public class VehicleService extends TollgateService {
             v = new VehicleStateMachine(vehicle);
         } catch (ModelException e) {
             e.printStackTrace();
-            return null;
+            return;
         }
 
         v.getEngine().addListener(v.getEngine().getStateMachine(), new SCXMLListener() {
@@ -49,30 +54,47 @@ public class VehicleService extends TollgateService {
                 LoggerFactory.getLogger(VehicleService.class).info(v.getVehicle().getId() + " transition fired: " + s);
             }
         });
-        v.init();
-        return this.vehicleRepository.saveVehicleStateMachine(v);
+
+        this.vehicleRepository.saveVehicleStateMachine(v);
 
     }
+
+    public void registerVehicle() {
+        this.registerVehicle(new Vehicle());
+    }
+
+    public boolean start(Vehicle vehicle) {
+        return this.start(vehicle.getId());
+    }
+
+    public boolean start(String vehicleId) {
+        VehicleStateMachine vsm = vehicleRepository.findVehicleStateMachineByVehicleId(vehicleId);
+        if (vsm != null) {
+            return vsm.fireEvent("start");
+        }
+        return false;
+    }
+
+    public List<VehicleStateMachine> vehicles() {
+        return this.vehicleRepository.findAll();
+    }
+
 
     @Override
     public void accept(VehicleContext context) {
         if (!context.isState()) {
-            if (context.getContext().equals("start")) {    //we currently treat vehicle detection in an ad hoc manner
-                this.registerVehicle(context.getVehicle());
-            } else {
-                VehicleStateMachine vsm = vehicleRepository.findVehicleStateMachineByVehicleId(context.getVehicle().getId());
-                if (vsm != null) {
-                    vsm.fireEvent(context.getContext());
+            VehicleStateMachine vsm = vehicleRepository.findVehicleStateMachineByVehicleId(context.getVehicle().getId());
+            if (vsm != null) {
+
+                vsm.fireEvent(context.getContext());
+
+                if (context.getContext().equals("recognition_successes")) {
+                    vehicleRepository.saveVehicle(context.getVehicle());
                 }
             }
         } else {
             //otherwise, just ignore
         }
-
-
     }
 
-    public int count() {
-        return this.vehicleRepository.vehicleCount();
-    }
 }

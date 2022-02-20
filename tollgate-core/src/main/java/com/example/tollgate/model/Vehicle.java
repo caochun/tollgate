@@ -39,6 +39,10 @@ public class Vehicle extends TollgateEntity {
         this.plate = Vehicle.PLATE_HOLDER;
     }
 
+    public String getPlate(){
+        return this.plate;
+    }
+
     public void setPlate(String plate) {
         this.plate = plate;
     }
