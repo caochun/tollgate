@@ -1,0 +1,20 @@
+@startuml
+actor       VehicleServiceUser      as uVehicle
+participant VehicleService          as sVehicle
+queue       Queue                   as RabbitMQ
+participant RecognizingService      as sRecognizing
+actor       RecognizingServiceUser  as uRecognizing
+
+uVehicle -> sVehicle : GET /register
+uVehicle -> sVehicle : GET /vehicles
+uVehicle -> sVehicle : GET /start?id=xxxx
+sVehicle -> RabbitMQ : start(xxxx)
+RabbitMQ -> sRecognizing : start(xxxx)
+uRecognizing -> sRecognizing : GET /unconfirmed
+uRecognizing -> sRecognizing : GET /confirm?id=(xxxx)
+sRecognizing -> RabbitMQ : recognizing_successes(xxxx)
+RabbitMQ -> sVehicle : recognizing_successes(xxxx)
+uVehicle -> sVehicle : GET /vehicles
+
+@enduml
+
