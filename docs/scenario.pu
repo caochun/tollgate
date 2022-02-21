@@ -1,20 +1,20 @@
 @startuml
-actor       VehicleServiceUser      as uVehicle
-participant VehicleService          as sVehicle
+actor       车道前端      as uTolling
+participant TollingService          as sTolling
 queue       Queue                   as RabbitMQ
 participant RecognizingService      as sRecognizing
-actor       RecognizingServiceUser  as uRecognizing
+actor       识别前端  as uRecognizing
 
-uVehicle -> sVehicle : GET /register
-uVehicle -> sVehicle : GET /vehicles
-uVehicle -> sVehicle : GET /start?id=xxxx
-sVehicle -> RabbitMQ : start(xxxx)
+uTolling -> sTolling : GET /register
+uTolling -> sTolling : GET /tollings
+uTolling -> sTolling : GET /start?id=xxxx
+sTolling -> RabbitMQ : start(xxxx)
 RabbitMQ -> sRecognizing : start(xxxx)
 uRecognizing -> sRecognizing : GET /unconfirmed
 uRecognizing -> sRecognizing : GET /confirm?id=(xxxx)
 sRecognizing -> RabbitMQ : recognizing_successes(xxxx)
-RabbitMQ -> sVehicle : recognizing_successes(xxxx)
-uVehicle -> sVehicle : GET /vehicles
+RabbitMQ -> sTolling : recognizing_successes(xxxx)
+uTolling -> sTolling : GET /tollings
 
 @enduml
 

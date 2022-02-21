@@ -1,0 +1,62 @@
+@startuml
+Approached: 车辆进入车道
+Recognizing: 车辆信息识别中
+Recognized: 车辆信息已识别
+Validating: 车辆信息交验中
+Validated: 车辆信息已交验
+Billing: 计费中
+Billed: 计费完成
+Paid: 支付完成
+Left: 已驶离
+
+[*] -right-> Approached
+Approached -right-> Recognizing: start
+note on link
+开始
+end note
+Recognizing -left-> Approached: recognition_fails
+note on link
+识别失败
+end note
+Recognizing -right-> Recognized: recognition_successes
+note on link
+识别成功
+end note
+Recognized -down-> Validating: validation_starts
+note on link
+交验开始
+end note
+Validating -down-> Validated: validation_successes
+note on link
+交验成功
+end note
+Validating -up-> Recognized: validation_fails
+note on link
+交验失败
+end note
+Validated -up-> Billing: billing_starts
+note on link
+开始支付
+end note
+Billing -left-> Billed : billing_sucesses
+note on link
+支付成功
+end note
+Billing -down-> Validated : billing_fails
+note on link
+支付失败
+end note
+Billed -down-> Paid : pay
+note on link
+支付成功
+end note
+Paid -left-> Left : leaving_detects
+note on link
+驶离
+end note
+Left -up-> [*]
+
+
+
+
+@enduml

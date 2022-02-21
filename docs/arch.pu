@@ -1,0 +1,30 @@
+@startuml
+
+component TollingService
+component RecognizingService
+component BillingService
+component ValidatingService
+component DeviceController
+
+actor 车道前端 as TollingClient
+actor 识别前端 as RecognizingClient
+actor 收费前端 as BillingClient
+actor 验证前端 as ValidatingClient
+entity 车道设备 as Device
+
+TollingService #~le~ TollingClient
+RecognizingService #~~ RecognizingClient
+BillingService #~~ BillingClient
+ValidatingService #~~ ValidatingClient
+DeviceController #~~ Device
+
+queue Queue
+
+TollingService .(0). Queue
+Queue .(0). BillingService
+Queue .(0). RecognizingService
+Queue .(0). ValidatingService
+Queue .(0). DeviceController
+
+@enduml
+
