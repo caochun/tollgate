@@ -77,7 +77,7 @@ public class TollingService extends TollgateService {
 
     private void handleTollingTransition(TollingContext tollingContext) {
 
-        TollingStateMachine tollingStateMachine = tollingRepository.findTollingStateMachineById(tollingContext.getId());
+        TollingStateMachine tollingStateMachine = tollingRepository.findTollingStateMachineById(tollingContext.getTolling().getId());
         if (tollingStateMachine != null) {
             tollingStateMachine.fireEvent(tollingContext.getContext());
 
