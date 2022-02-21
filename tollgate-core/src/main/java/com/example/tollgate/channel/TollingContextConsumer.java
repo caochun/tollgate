@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.function.Consumer;
 
-public class VehicleContextConsumer implements Consumer<VehicleContext> {
+public class TollingContextConsumer implements Consumer<TollingContext> {
 
     private TollgateService tollgateService;
 
@@ -14,9 +14,8 @@ public class VehicleContextConsumer implements Consumer<VehicleContext> {
         this.tollgateService = tollgateService;
     }
 
-
     @Override
-    public void accept(VehicleContext vehicleContext) {
-        tollgateService.accept(vehicleContext);
+    public void accept(TollingContext tollingContext) {
+        tollgateService.accept(tollingContext);
     }
 }

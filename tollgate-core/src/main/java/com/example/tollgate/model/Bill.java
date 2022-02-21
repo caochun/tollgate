@@ -7,7 +7,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import java.util.Random;
 
 @Data
-@EqualsAndHashCode(callSuper=false)
 public class Bill extends TollgateEntity {
     private double total;
     private String details;

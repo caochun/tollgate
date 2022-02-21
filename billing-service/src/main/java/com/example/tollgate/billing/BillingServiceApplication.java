@@ -18,8 +18,4 @@ public class BillingServiceApplication {
         SpringApplication.run(BillingServiceApplication.class, args);
     }
 
-    @Bean
-    public Consumer<Message<HeartBeat>> heartbeatConsumer() {
-        return message -> LogFactory.getLog(BillingServiceApplication.class).info("Received " + message.getPayload().getTimestamp());
-    }
 }

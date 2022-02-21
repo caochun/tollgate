@@ -1,5 +1,7 @@
 package com.example.tollgate.model;
 
+import lombok.EqualsAndHashCode;
+
 import java.util.UUID;
 
 public class TollgateEntity {
@@ -14,7 +16,7 @@ public class TollgateEntity {
         this.id = id;
     }
 
-    public TollgateEntity(){
+    public TollgateEntity() {
         this.id = UUID.randomUUID().toString();
     }
 }

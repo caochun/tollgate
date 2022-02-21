@@ -20,7 +20,7 @@
     </properties>
 
     <modules>
-        <module>vehicle-service</module>
+        <module>tolling-service</module>
         <module>billing-service</module>
         <module>tollgate-core</module>
         <module>recognizing-service</module>

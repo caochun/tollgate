@@ -1,4 +1,4 @@
-package com.example.tollgate.recognizing;
+package com.example.tollgate.tolling;
 
 import com.example.tollgate.channel.TollingContextConsumer;
 import org.springframework.boot.SpringApplication;
@@ -8,15 +8,15 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan("com.example.tollgate")
-public class RecognizingServiceApplication {
+public class TollingServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(RecognizingServiceApplication.class, args);
+        SpringApplication.run(TollingServiceApplication.class, args);
     }
 
     @Bean
-    public TollingContextConsumer tollingStateConsumer() {
+    public TollingContextConsumer tollingTransitionConsumer() {
         return new TollingContextConsumer();
     }
-
+    
 }

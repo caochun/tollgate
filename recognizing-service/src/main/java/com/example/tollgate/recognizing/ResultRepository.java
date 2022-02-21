@@ -1,6 +1,6 @@
 package com.example.tollgate.recognizing;
 
-import com.example.tollgate.model.Vehicle;
+import com.example.tollgate.model.Tolling;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -16,31 +16,31 @@ public class ResultRepository {
         return results.values();
     }
 
-    public void saveResult(Vehicle vehicle) {
-        this.results.put(vehicle.getId(), new RecognizingResult(vehicle, false));
+    public void saveResult(Tolling tolling) {
+        this.results.put(tolling.getId(), new RecognizingResult(tolling, false));
     }
 
     public void saveResult(RecognizingResult recognizingResult) {
-        this.results.put(recognizingResult.getVehicle().getId(), recognizingResult);
+        this.results.put(recognizingResult.getTolling().getId(), recognizingResult);
     }
 
-    public RecognizingResult getResult(Vehicle vehicle) {
-        return this.results.get(vehicle.getId());
+    public RecognizingResult getResult(Tolling tolling) {
+        return this.results.get(tolling.getId());
     }
 
-    public RecognizingResult getResultById(String vehicleId) {
-        return this.results.get(vehicleId);
+    public RecognizingResult getResultById(String tollingId) {
+        return this.results.get(tollingId);
     }
 
-    public RecognizingResult setConfirmResult(Vehicle vehicle, boolean confirm) {
-        RecognizingResult r = this.getResult(vehicle);
+    public RecognizingResult setConfirmResult(Tolling tolling, boolean confirm) {
+        RecognizingResult r = this.getResult(tolling);
         r.setConfirmed(confirm);
         this.saveResult(r);
         return r;
     }
 
-    public RecognizingResult setConfirmResultById(String vehicleId, boolean confirm) {
-        RecognizingResult r = this.getResultById(vehicleId);
+    public RecognizingResult setConfirmResultById(String tollingId, boolean confirm) {
+        RecognizingResult r = this.getResultById(tollingId);
         r.setConfirmed(confirm);
         this.saveResult(r);
         return r;

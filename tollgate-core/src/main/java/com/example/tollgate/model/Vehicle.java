@@ -1,5 +1,8 @@
 package com.example.tollgate.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Random;
 
 public class Vehicle extends TollgateEntity {
@@ -32,6 +35,8 @@ public class Vehicle extends TollgateEntity {
         return vid;
     }
 
+    @Getter
+    @Setter
     private String plate;
 
     public Vehicle() {
@@ -39,13 +44,6 @@ public class Vehicle extends TollgateEntity {
         this.plate = Vehicle.PLATE_HOLDER;
     }
 
-    public String getPlate(){
-        return this.plate;
-    }
-
-    public void setPlate(String plate) {
-        this.plate = plate;
-    }
 
     public void setRandomPlate() {
         this.setPlate(Vehicle.randomVehicleId());

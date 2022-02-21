@@ -8,9 +8,9 @@
         <version>0.0.1</version>
         <relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
     </parent>
-    <artifactId>vehicle-service</artifactId>
-    <name>vehicle-service</name>
-    <description>Vehicle Service for Tollgate</description>
+    <artifactId>tolling-service</artifactId>
+    <name>tolling-service</name>
+    <description>Tolling Service for Tollgate</description>
     <dependencies>
 
         <dependency>
