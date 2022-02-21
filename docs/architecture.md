@@ -11,7 +11,7 @@
 
 系统架构如图所示。
 
-![](arch.png)
+![](arch.svg)
 
 
 
@@ -19,7 +19,7 @@
 
 本例中针对车辆出站（MTC车道）的收费业务建模如图所示。
 
-![](state.png)
+![](state.svg)
 
 
 我们采用 [SCXML](https://www.w3.org/TR/scxml/) 对车辆进行状态建模，并使用 [Apache Common SCXML](https://commons.apache.org/proper/commons-scxml/) 作为该模型的运行引擎。
@@ -31,7 +31,7 @@
 
 当前版本（ [build-220221](https://github.com/caochun/tollgate/releases/tag/build-220221) )中实现`TollingService`和`RecoginzingService`，用户可通过这两个服务实现车辆进站注册并识别车辆信息的场景。如下图所示：
 
-![](scenario.png)
+![](scenario.svg)
 
 其中`TollingService` 实现以下web接口与用户交互：
 - `GET http://localhost:8080/register` ，调用该接口则在`TollingService`创建一个新的业务状态机（初始化为`approached`状态，业务相应的车辆车牌初始化为`中-PLATE`)；
