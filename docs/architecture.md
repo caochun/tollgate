@@ -36,12 +36,12 @@
 其中`TollingService` 实现以下web接口与用户交互：
 - `GET http://localhost:8080/register` ，调用该接口则在`TollingService`创建一个新的业务状态机（初始化为`approached`状态，业务相应的车辆车牌初始化为`中-PLATE`)；
 - `GET http://localhost:8080/tollings` ，返回`TollingService`中目前管理的业务状态机列表；
-- `GET http://localhost:8080/start?id={vehicleId}` ，传入一个业务的id，向其状态机发送`start` 消息。
+- `GET http://localhost:8080/start?id={tollingId}` ，传入一个业务的id，向其状态机发送`start` 消息。
 
 `RecognizingService` 实现以下web接口与用户交互：
 - `GET http://localhost:8090/unconfirmed` , 返回`RecognizingService` 中当前等待确认车辆信息的业务列表；
-- `GET http://localhost:8090/confirm?id={vehicleId}` ，传入一个业务的id，确认所识别的该业务对应车辆信息；
-- `GET http://localhost:8090/unconfirm?id={vehicleId}` ，传入一个业务的id，否认其识别的该业务对应车辆信息。
+- `GET http://localhost:8090/confirm?id={tollingId}` ，传入一个业务的id，确认所识别的该业务对应车辆信息；
+- `GET http://localhost:8090/unconfirm?id={tollingId}` ，传入一个业务的id，否认其识别的该业务对应车辆信息。
 
 每个服务都从消息队列订阅消息，或通过消息队列发出消息。当前`TollingService`在每个状态机对象进入某个状态（state）时通过消息队列发送包含业务数据（`Tolling`对象）及其当前状态的消息（`TollContext`)，
 `RecognizingService`订阅这些消息，并在收到时执行`TollgateServcie` 对象的`accept()` 方法；`RecognizingService`执行过程中可能发出包含车辆信息和业务状态转移（transition）的消息，
