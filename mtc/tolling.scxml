@@ -1,41 +1,48 @@
-<?xml version="1.0"?>
-<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="approached">
-
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" binding="early" xmlns:qt="http://www.qt.io/2015/02/scxml-ext" qt:editorversion="9.0.1" initial="approached">
+    <qt:editorinfo initialGeometry="-113.21;-240;-20;-20;40;40"/>
     <state id="approached">
-        <transition event="start" target="recognizing"/>
+        <qt:editorinfo scenegeometry="278.60;-169.29;215.39;-219.29;126.42;100" geometry="278.60;-169.29;-63.21;-50;126.42;100"/>
+        <transition type="internal" event="mtc_approached" target="recognizing">
+            <qt:editorinfo localGeometry="-154.55;25.71"/>
+        </transition>
     </state>
-
     <state id="recognizing">
-        <transition event="recognition_fails" target="approached"/>
-        <transition event="recognition_successes" target="recognized"/>
+        <qt:editorinfo scenegeometry="-113.21;-93.48;-175.24;-143.48;124.06;100" geometry="-113.21;-93.48;-62.03;-50;124.06;100"/>
+        <transition type="internal" event="recognition_fails" target="approached">
+            <qt:editorinfo localGeometry="231.52;0"/>
+        </transition>
+        <transition type="internal" event="recognition_successes" target="recognized"/>
     </state>
-
     <state id="recognized">
-        <transition event="validation_starts" target="validating"/>
+        <qt:editorinfo scenegeometry="-113.20;57.27;-173.36;7.27;120.31;100" geometry="-113.20;57.27;-60.16;-50;120.31;100"/>
+        <transition type="internal" event="validation_starts" target="validating"/>
     </state>
-
     <state id="validating">
-        <transition event="validation_fails" target="recognized"/>
-        <transition event="validation_successes." target="validated"/>
+        <qt:editorinfo scenegeometry="121.03;158.11;61.03;108.11;120;100" geometry="121.03;158.11;-60;-50;120;100"/>
+        <transition type="internal" event="validation_fails" target="recognized">
+            <qt:editorinfo movePoint="-32.16;10.34" localGeometry="-138.26;-0.08"/>
+        </transition>
+        <transition type="internal" event="validation_successes" target="validated"/>
     </state>
-
     <state id="validated">
-        <transition event="billing_starts" target="billing"/>
+        <qt:editorinfo scenegeometry="-72.97;338.62;-132.97;288.62;120;100" geometry="-72.97;338.62;-60;-50;120;100"/>
+        <transition type="internal" event="billing_starts" target="billing"/>
     </state>
-
     <state id="billing">
-        <transition event="billing_fails" target="validated"/>
-        <transition event="billing_successes" target="billed"/>
+        <qt:editorinfo scenegeometry="278.60;298.21;218.60;248.21;120;100" geometry="278.60;298.21;-60;-50;120;100"/>
+        <transition type="internal" event="billing_fails" target="validated"/>
+        <transition type="internal" event="billing_successes" target="billed"/>
     </state>
-
     <state id="billed">
-        <transition event="pay" target="paid"/>
+        <qt:editorinfo scenegeometry="461.86;130.13;401.86;80.13;120;100" geometry="461.86;130.13;-60;-50;120;100"/>
+        <transition type="internal" event="pay" target="paid"/>
     </state>
-
     <state id="paid">
-        <transition event="leaving_detects" target="left"/>
+        <qt:editorinfo scenegeometry="445.70;-126.51;385.70;-176.51;120;100" geometry="445.70;-126.51;-60;-50;120;100"/>
+        <transition type="internal" event="leaving_detects" target="left"/>
     </state>
-
-    <final id="left"/>
-
+    <final id="left">
+        <qt:editorinfo scenegeometry="216.66;-34.73;196.66;-54.73;40;40" geometry="216.66;-34.73;-20;-20;40;40"/>
+    </final>
 </scxml>

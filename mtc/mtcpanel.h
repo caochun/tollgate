@@ -3,6 +3,8 @@
 
 #include <QScxmlStateMachine>
 #include <QWidget>
+#include <QGroupBox>
+#include <QStackedLayout>
 
 class MtcPanel : public QWidget
 {
@@ -15,6 +17,25 @@ signals:
 
 private:
     QScxmlStateMachine *m_machine;
+
+    QStackedLayout *stack;
+
+    QGroupBox *approachedGroup;
+    QGroupBox *recognizingGroup;
+    QGroupBox *recognizedGroup;
+
+    QGroupBox *currentGroup = NULL;
+
+public slots:
+
+    void intoApproached();
+    void intoRecoginizing();
+    void intoRecoginized();
+
+private:
+    QGroupBox *createApproachedGroup();
+    QGroupBox *createRecognizingGroup();
+    QGroupBox *createRecognizedGroup();
 
 };
 

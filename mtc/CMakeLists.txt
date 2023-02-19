@@ -31,6 +31,14 @@ set_source_files_properties("./tolling.scxml"
     PROPERTIES QT_RESOURCE_ALIAS "tolling.scxml"
 )
 
+qt6_add_resources(mtc "mtc"
+    PREFIX
+        "/"
+    FILES
+        "./tolling.scxml"
+)
+
+
 set_target_properties(mtc PROPERTIES
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
