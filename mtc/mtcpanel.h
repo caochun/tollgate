@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QGroupBox>
 #include <QStackedLayout>
+#include "qamqp/src/qamqpclient.h"
 
 class MtcPanel : public QWidget
 {
