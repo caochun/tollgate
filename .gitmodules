@@ -1,0 +1,3 @@
+[submodule "mtc/qamqp"]
+	path = mtc/qamqp
+	url = git@github.com:mbroadst/qamqp.git
