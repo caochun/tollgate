@@ -1,0 +1,27 @@
+@startuml
+
+control 车道业务 as bizLogic #blue
+actor 用户 as user #yellow
+participant 黑名单服务 as blservice #lightGrey
+participant 计费服务 as biservice #pink
+entity 打印机 as printer #green
+entity 读卡器 as reader #Orange
+entity 栏杆 as braker #red
+
+bizLogic -> user : 确认车牌
+user--> bizLogic: 确认
+bizLogic -> blservice : 是否在黑名单
+blservice --> bizLogic : 否
+bizLogic -> reader : 读卡
+reader --> bizLogic : 卡内数据
+
+bizLogic -> biservice : 费用计算
+biservice --> bizLogic : 计算结果
+
+bizLogic -> user : 按价收费
+user ->  bizLogic : 收费完成
+
+bizLogic -> braker : 抬杆
+braker --> bizLogic : 完成
+
+@end
