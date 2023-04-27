@@ -1,4 +1,4 @@
-@startuml
+@startuml mtc
 
 
 archimate  "用户" as user <<business-actor>>

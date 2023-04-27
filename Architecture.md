@@ -29,7 +29,16 @@
 
 ![](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/caochun/tollgate/main/plantuml/mtc-cpss.puml)
 
-我们将这种架构称为人机物融合架构。其与传统桌面应用实现的业务架构相对比存在优势如下：
+我们将这种架构称为人机物融合架构。这一逻辑架构可采用以下云计算部署架构：
+
+![](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/caochun/tollgate/main/plantuml/mtc-cloud.puml)
+
+
+实际生产环境中，该系统需要服务多条车道，每条车道对应部署边缘节点，多条车道多辆车通行过程中，计费等计算密集型服务又可通过多实例水平扩展保证服务质量，形成以下运行部署。
+
+![](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/caochun/tollgate/main/plantuml/mtc-cloud-lanes.puml)
+
+其与传统桌面应用实现的业务架构相对比存在优势如下：
 
 |桌面应用架构|人机物融合架构|
 |---|---|

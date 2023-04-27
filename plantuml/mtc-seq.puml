@@ -1,4 +1,4 @@
-@startuml
+@startuml mtc-seq
 
 control 车道业务 as bizLogic #blue
 actor 用户 as user #yellow
