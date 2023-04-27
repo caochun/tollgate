@@ -21,6 +21,7 @@ biservice --> bizLogic : 计算结果
 bizLogic -> user : 按价收费
 user ->  bizLogic : 收费完成
 
+bizLogic -> printer : 打印发票
 bizLogic -> braker : 抬杆
 braker --> bizLogic : 完成
 
