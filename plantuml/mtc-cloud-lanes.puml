@@ -14,8 +14,7 @@ rectangle 车道2 {
 }
 
 cloud 云-数据中心节点 {
-    archimate  #LightBlue "车道1-业务" as bizLogic1 <<business-collaboration>>
-    archimate  #LightBlue "车道2-业务" as bizLogic2 <<business-collaboration>>
+    archimate  #LightBlue "车道业务" as bizLogic <<business-collaboration>>
 
     archimate  #grey  "黑名单服务" as blservice <<service>>
     archimate  #pink  "计费服务" as biservice1 <<service>>
@@ -39,37 +38,35 @@ cloud 车道2-工控机 {
 
 
 
-bizLogic1 -down-> ui1 : 调用
+bizLogic -down-> ui1 : 调用
 ui1 <-down-> user1 : 交互
 
-bizLogic1 -down-> printerservice1 : 调用
+bizLogic -down-> printerservice1 : 调用
 printerservice1 -down-> printer1 : 控制
 
-bizLogic1 -down-> readerservice1 : 调用
+bizLogic -down-> readerservice1 : 调用
 readerservice1 -down-> reader1 :控制
 
-bizLogic1 -down-> brakeservice1 : 调用
+bizLogic -down-> brakeservice1 : 调用
 brakeservice1 -down-> brake1 : 控制
 
 
-bizLogic1 -down-> blservice : 调用
-bizLogic1 -down-> biservice2 : 调用
+bizLogic -down-> blservice : 调用
+bizLogic -down-> biservice2 : 调用
 
 
-bizLogic2 -down-> ui2 : 调用
+bizLogic -down-> ui2 : 调用
 ui2 <-down-> user2 : 交互
 
-bizLogic2 -down-> printerservice2 : 调用
+bizLogic -down-> printerservice2 : 调用
 printerservice2 -down-> printer2 : 控制
 
-bizLogic2 -down-> readerservice2 : 调用
+bizLogic -down-> readerservice2 : 调用
 readerservice2 -down-> reader2 :控制
 
-bizLogic2 -down-> brakeservice2 : 调用
+bizLogic -down-> brakeservice2 : 调用
 brakeservice2 -down-> brake2 : 控制
 
-
-bizLogic2 -down-> blservice : 调用
-bizLogic2 -down-> biservice1 : 调用
+bizLogic -down-> biservice1 : 调用
 
 @enduml
