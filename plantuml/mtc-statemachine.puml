@@ -1,5 +1,6 @@
 @startuml mtc-model
 
+
 state 行程获取 #Orange
 state 车辆可通行 #Grey
 state 车辆被识别 #LightBlue
@@ -9,6 +10,9 @@ state 已打发票 #lightGreen
 state 已放行 #red
 state 车辆驶出 #LightBlue
 state 车辆异常 #LightCoral
+
+
+
 
 [*] -up-> 车辆进入
 车辆进入 -up-> 车辆被识别 : 确认车辆标识
@@ -35,6 +39,9 @@ state 车辆异常 #LightCoral
 
 车辆异常 --> [*] : 处理完成
 车辆驶出 -left-> [*] : 完成
+
+
+
 
 
 @enduml

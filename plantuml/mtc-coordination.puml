@@ -1,0 +1,73 @@
+@startuml mtc-model
+
+state 黑名单服务 #grey
+state 计费服务 #pink 
+state 车辆信息界面 #Yellow 
+state 收费信息界面 #Yellow 
+state CPC读卡界面 #Yellow 
+state 确认完成界面 #Yellow 
+
+state 栏杆服务 #red
+state 打印服务 #lightgreen
+state 读卡服务 #orange
+state 特情处理 #BlueViolet
+
+state 车辆进入 ##[dotted]Grey
+state 行程获取 ##[dotted]Orange
+state 车辆可通行 ##[dotted]Grey
+state 车辆被识别 ##[dotted]LightBlue
+state 费用已计算 ##[dotted]Pink
+state 已收费 ##[dotted]LightBlue
+state 已打发票 ##[dotted]lightGreen
+state 已放行 ##[dotted]red
+state 车辆驶出 ##[dotted]LightBlue
+state 车辆异常 ##[dotted]LightCoral
+
+
+
+[*] -right[dashed]-> 车辆进入
+
+车辆进入 -right[dashed]-> 车辆被识别 : 确认车辆标识
+车辆进入 -up-> 车辆信息界面: 请求用户识别
+
+车辆被识别 -right[dashed]-> 车辆可通行 : 黑名单查询通过
+车辆被识别 -up->黑名单服务: 合法性验证
+
+车辆被识别 -down[dashed]-> 车辆异常 : 黑名单查询未通过
+
+车辆可通行 -[dashed]right-> 行程获取 : 读卡成功
+车辆可通行 -up-> 读卡服务 : 要求读卡
+车辆可通行 -up-> CPC读卡界面 : 显示行程信息
+
+行程获取 -right[dashed]->  费用已计算 : 计费成功
+行程获取 -up->  计费服务 : 要求计费
+
+费用已计算 -right[dashed]->  已收费 : 收费成功
+费用已计算 -up-> 收费信息界面 : 请操作员收费
+
+已收费 -[dashed]->  已打发票 : 打印发票成功
+已收费 -right->  打印服务 : 启动打印
+
+已打发票 -down[dashed]->  已放行 : 抬杆成功
+已打发票 -right->  栏杆服务 : 抬杆
+
+已放行 -down[dashed]-> 车辆驶出 : 驶出
+已放行 -right-> 确认完成界面 
+
+车辆进入 -down[dashed]-> 车辆异常 : 未能识别
+车辆可通行 -down[dashed]-> 车辆异常 : 读卡失败
+行程获取 -down[dashed]-> 车辆异常 : 计费失败
+费用已计算 -down[dashed]-> 车辆异常 : 收费失败
+已收费 -down[dashed]-> 车辆异常 : 打票失败
+已打发票 -down[dashed]-> 车辆异常 : 抬杆失败
+
+车辆异常 -[dashed]-> [*] : 处理完成
+车辆异常 -down-> 特情处理
+
+车辆驶出 -left[dashed]-> [*] : 完成
+
+
+
+
+
+@enduml
