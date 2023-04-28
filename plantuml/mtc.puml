@@ -7,9 +7,9 @@ archimate  #LightBlue "车道软件" as mtc <<technology-device>>
 archimate  #grey  "黑名单服务" as blservice <<service>>
 archimate  #pink  "计费服务" as biservice <<service>>
 
-rectangle 打印机 as printer #lightgreen
-rectangle 栏杆 as brake #red
-rectangle 读卡器 as reader #orange
+archimate #lightgreen "打印机"  as printer <<physical-equipment>>
+archimate #red "栏杆"  as brake <<physical-facility>>
+archimate #orange "读卡器"  as reader <<physical-material>>
 
 
 user -down-> mtc
