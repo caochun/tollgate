@@ -1,4 +1,4 @@
-@startuml mtc-model
+@startuml mtc-coordination
 
 state 黑名单服务 #grey
 state 计费服务 #pink 

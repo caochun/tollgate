@@ -1,4 +1,4 @@
-@startuml mtc-model
+@startuml mtc-statemachine
 
 
 state 行程获取 #Orange

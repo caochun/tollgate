@@ -1,4 +1,4 @@
-@startuml mtc-cloud
+@startuml mtc-cloud-lanes
 rectangle 车道1 {
     archimate  "用户" as user1 <<business-actor>>
     archimate #lightgreen "打印机"  as printer1 <<physical-equipment>>
