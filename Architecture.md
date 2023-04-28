@@ -61,9 +61,15 @@
 
 ### 数字孪生系统
 
-当前有若干数字孪生开源系统，例如[Eclipse Ditto](https://www.eclipse.org/ditto/)，实现数字孪生的基础功能：通过通信技术与设备进行交互，一方面对其进行遥测（telemetry）获取其状态，另一方面向其发送命令改变其状态，以收费车道栏杆为例：
+当前有若干数字孪生开源系统，例如[Eclipse Ditto](https://www.eclipse.org/ditto/)，实现数字孪生的基础功能：通过通信技术与设备进行交互，一方面对其进行遥测（telemetry）获取其状态，另一方面向其发送命令改变其状态。Ditto提供了[HTTP/MQTT/AMQP协议的通信适配器](https://www.eclipse.org/hono/docs/concepts/connecting-devices)实现，通信网关负责以设备本地协议与其交互，然后转换为Ditto标准适配器所要求的协议上传状态或下达命令。以收费车道栏杆为例：
 
 ![](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/caochun/tollgate/main/plantuml/dt-brake.puml)
+
+
+实际上很多物联网平台也实现类似机制，例如[Thingsboard](https://thingsboard.io)，其[IoT Gateway子项目](https://thingsboard.io/docs/iot-gateway/)给出各类非TCP/IP协议连接设备的网关实现参考。
+
+
+
 
 To be continued ...
 
