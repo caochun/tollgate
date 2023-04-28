@@ -1,23 +1,17 @@
 @startuml mtc-eventdriven
 
-
 archimate  "用户" as user <<business-actor>>
 archimate #lightgreen "打印机"  as printer <<physical-equipment>>
 archimate #red "栏杆"  as brake <<physical-facility>>
 archimate #orange "读卡器"  as reader <<physical-material>>
 
-
 archimate  #LightBlue "车道业务" as bizLogic <<business-collaboration>>
-
-
-
 
 archimate  #grey  "黑名单服务" as blservice <<service>>
 archimate  #pink  "计费服务" as biservice <<service>>
 archimate  #Yellow  "交互界面" as ui <<service>>
 
 rectangle 数字孪生系统 {
-
     archimate  #red  "栏杆孪生" as dtbrake <<object>>
     archimate  #lightgreen  "打印机孪生" as dtprinter <<object>>
     archimate  #orange  "读卡器孪生" as dtreader <<object>>
@@ -33,7 +27,6 @@ archimate #red "通信网关"  as gwbrake <<interaction>>
 
 
 ui -down-> dtmq : 孪生状态订阅
-
 
 queue 消息队列 as mq
 
