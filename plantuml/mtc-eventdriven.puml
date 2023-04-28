@@ -1,0 +1,66 @@
+@startuml mtc-cpss
+
+
+archimate  "用户" as user <<business-actor>>
+archimate #lightgreen "打印机"  as printer <<physical-equipment>>
+archimate #red "栏杆"  as brake <<physical-facility>>
+archimate #orange "读卡器"  as reader <<physical-material>>
+
+
+archimate  #LightBlue "车道业务" as bizLogic <<business-collaboration>>
+
+
+
+
+archimate  #grey  "黑名单服务" as blservice <<service>>
+archimate  #pink  "计费服务" as biservice <<service>>
+archimate  #Yellow  "交互界面" as ui <<service>>
+
+rectangle 数字孪生系统 {
+
+    archimate  #red  "栏杆孪生" as dtbrake <<object>>
+    archimate  #lightgreen  "打印机孪生" as dtprinter <<object>>
+    archimate  #orange  "读卡器孪生" as dtreader <<object>>
+    queue 消息队列 as dtmq
+    dtbrake -up-> dtmq : 状态发布
+    dtprinter -up-> dtmq : 状态发布
+    dtreader -up-> dtmq : 状态发布
+}
+
+archimate #lightgreen "通信网关"  as gwprinter <<interaction>>
+archimate #orange "通信网关"  as gwreader <<interaction>>
+archimate #red "通信网关"  as gwbrake <<interaction>>
+
+
+ui -down-> dtmq : 孪生状态订阅
+
+
+queue 消息队列 as mq
+
+bizLogic -right-> mq : 业务事件发布
+mq <-up- ui : 业务事件订阅
+
+ui <-up-> user : 交互
+
+mq <-right- dtprinter : 业务事件订阅
+dtprinter -down-> gwprinter : 指令下发
+gwprinter -up-> dtprinter : 数据上传
+gwprinter -down-> printer : 操作接口调用
+printer -up-> gwprinter : 状态接口调用
+
+mq <-right- dtreader : 业务事件订阅
+dtreader -down-> gwreader : 指令下发
+gwreader -up-> dtreader : 数据上传
+gwreader -down-> reader : 操作接口调用
+reader -up-> gwreader : 状态接口调用
+
+mq <-right- dtbrake : 业务事件订阅
+dtbrake -down-> gwbrake : 指令下发
+gwbrake -up-> dtbrake : 数据上传
+gwbrake -down-> brake : 操作接口调用
+brake -up-> gwbrake : 状态接口调用
+
+mq <-down- blservice : 业务事件订阅
+mq <-up- biservice : 业务事件订阅
+
+@enduml

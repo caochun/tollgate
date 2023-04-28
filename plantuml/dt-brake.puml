@@ -12,6 +12,6 @@ brake -> gateway : 状态获取接口调用
 gateway -> digitaltwin : 数据上传
 digitaltwin -> user : 数字镜像
 user -> digitaltwin : 协同指令
-digitaltwin -> gateway : 命令下发
+digitaltwin -> gateway : 指令下发
 gateway -> brake : 命令操作接口调用
 @enduml
