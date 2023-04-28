@@ -1,0 +1,17 @@
+@startuml dt-brake
+
+archimate #red "栏杆"  as brake <<physical-facility>>
+
+archimate #LightSeaGreen "通信网关"  as gateway <<interaction>>
+
+archimate #GreenYellow "数字孪生"  as digitaltwin <<object>>
+
+archimate #LightBlue "用户/业务"  as user  <<actor>>
+
+brake -> gateway : 状态获取接口调用
+gateway -> digitaltwin : 数据上传
+digitaltwin -> user : 映像表示
+user -> digitaltwin : 协同指令
+digitaltwin -> gateway : 命令下发
+gateway -> brake : 命令操作接口调用
+@enduml
