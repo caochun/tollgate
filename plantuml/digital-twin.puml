@@ -1,0 +1,48 @@
+@startuml digital-twin
+
+
+rectangle 人机物资源层 {
+    archimate  "用户" as user <<business-actor>>
+    archimate #lightgreen "打印机"  as printer <<physical-equipment>>
+    archimate #red "栏杆"  as brake <<physical-facility>>
+    archimate #orange "读卡器"  as reader <<physical-material>>
+}
+
+rectangle 业务层 {
+    archimate  #LightGoldenRodYellow "大屏展示" as dashboard <<business-collaboration>>
+    archimate  #LightCoral "特情处理" as remotecontrol <<business-collaboration>>
+    archimate  #LightBlue "车道业务" as bizLogic <<business-collaboration>>
+}
+
+rectangle 数字孪生层 {
+     archimate  #Yellow  "交互界面" as ui <<service>>
+    archimate  #red  "栏杆服务" as brakeservice <<service>>
+    archimate  #lightgreen  "打印服务" as printerservice <<service>>
+    archimate  #orange  "读卡服务" as readerservice <<service>>
+
+}
+
+
+archimate  #grey  "黑名单服务" as blservice <<service>>
+archimate  #pink  "计费服务" as biservice <<service>>
+   
+
+数字孪生层 <-down-> 人机物资源层 : 交互
+业务层 <-down-> 数字孪生层 : 协同
+bizLogic -down-> ui : 调用
+ui -down-> user : 交互
+
+bizLogic -down-> printerservice : 调用
+printerservice -down-> printer : 控制
+
+bizLogic -down-> readerservice : 调用
+readerservice -down-> reader :控制
+
+bizLogic -down-> brakeservice : 调用
+brakeservice -down-> brake : 控制
+
+
+bizLogic -down-> blservice : 调用
+bizLogic -down-> biservice : 调用
+
+@enduml

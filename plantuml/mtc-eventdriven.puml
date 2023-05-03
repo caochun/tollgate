@@ -5,34 +5,48 @@ archimate #lightgreen "打印机"  as printer <<physical-equipment>>
 archimate #red "栏杆"  as brake <<physical-facility>>
 archimate #orange "读卡器"  as reader <<physical-material>>
 
-archimate  #LightBlue "车道业务" as bizLogic <<business-collaboration>>
+note left of user : 参与业务的“人”
+note right of printer : 参与业务的“物”
+note left of brake : 参与业务的“物”
+note right of reader : 参与业务的“物”
 
 archimate  #grey  "黑名单服务" as blservice <<service>>
 archimate  #pink  "计费服务" as biservice <<service>>
 archimate  #Yellow  "交互界面" as ui <<service>>
+
+note right of blservice : 参与业务的“机”
+note right of biservice : 参与业务的“机”
+
+note left of ui : 可以看作是人的数字孪生
 
 rectangle 数字孪生系统 {
     archimate  #red  "栏杆孪生" as dtbrake <<object>>
     archimate  #lightgreen  "打印机孪生" as dtprinter <<object>>
     archimate  #orange  "读卡器孪生" as dtreader <<object>>
     queue 消息队列 as dtmq
-    dtbrake -up-> dtmq : 状态发布
-    dtprinter -up-> dtmq : 状态发布
-    dtreader -up-> dtmq : 状态发布
+
+    archimate #lightgreen "通信网关"  as gwprinter <<interaction>>
+    archimate #orange "通信网关"  as gwreader <<interaction>>
+    archimate #red "通信网关"  as gwbrake <<interaction>>
+
+
 }
 
-archimate #lightgreen "通信网关"  as gwprinter <<interaction>>
-archimate #orange "通信网关"  as gwreader <<interaction>>
-archimate #red "通信网关"  as gwbrake <<interaction>>
+
+dtbrake -up-> dtmq : 状态发布
+dtprinter -up-> dtmq : 状态发布
+dtreader -up-> dtmq : 状态发布
 
 
-ui -down-> dtmq : 孪生状态订阅
-
-queue 消息队列 as mq
+rectangle 业务系统 {
+    archimate  #LightBlue "车道业务" as bizLogic <<business-collaboration>>
+    queue 消息队列 as mq
+}
 
 bizLogic -right-> mq : 业务事件发布
-mq <-up- ui : 业务事件订阅
 
+ui -down-> dtmq : 孪生状态订阅
+mq <-up- ui : 业务事件订阅
 ui <-up-> user : 交互
 
 mq <-right- dtprinter : 业务事件订阅
