@@ -17,7 +17,7 @@ tenant_id = "d63d9625-4069-476a-827b-7e605754a3d0"
 
 device_pwd = "this-is-my-password"
 
-pub_interval = 3 #seconds
+pub_interval = 3  # seconds
 
 client = mqtt.Client(device_id)
 
@@ -25,23 +25,35 @@ client.username_pw_set(device_id+"@"+tenant_id, device_pwd)
 client.tls_set("/etc/ssl/certs/ca-certificates.crt",
                tls_version=ssl.PROTOCOL_TLSv1_2)
 
+
 def pub_telemetry():
     client.loop()
     if client.is_connected():
-        print(purifier.status())
-        result = client.publish("telemetry", json.dumps(purifier.status().data,default=vars))
+        # print(purifier.status())
+        result = client.publish("telemetry", json.dumps(
+            purifier.status().data, default=vars))
         result.wait_for_publish()
 
+
 def on_connect(client, userdata, flags, rc):
-    
+
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
     client.subscribe("$SYS/#")
-
+    client.subscribe("command///req/#")
 
 
 def on_message(client, userdata, msg):
-    print(msg.topic+" "+str(msg.payload))
+    cmd = msg.topic.split("command///req//", 1)[1]
+    if cmd == "setPower":
+        param = json.loads(msg.payload)
+        print(param['power'])
+        if param['power'] == 'ON':
+            purifier.on()
+            print("Air Purifier is ON")
+        else:
+            purifier.off()
+            print("Air Purifier is OFF")
 
 
 
@@ -55,5 +67,4 @@ schedule.every(pub_interval).seconds.do(pub_telemetry)
 
 while True:
     time.sleep(1)
-    schedule.run_pending() 
-
+    schedule.run_pending()
