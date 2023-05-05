@@ -111,5 +111,21 @@
 
 ![](https://www.eclipse.org/hono/hono_landing_page.svg)
 
+我们先采用官方提供的沙盒测试环境进行概念解释和运行验证将一台[小米的空气净化器](https://cdn.cnbj0.fds.api.mi-img.com/b2c-shopapi-pms/pms_1569564998.1585253.jpg
+)连接到hono系统中并用ditto建立其数字孪生。
+
+参考Hono[官方文档](https://www.eclipse.org/hono/docs/getting-started/)，我们完成以下几步：
+
+1. [创建租户](https://www.eclipse.org/hono/docs/getting-started/#creating-a-new-tenant)（一个租户相当于一个名空间）；
+2. 为空气净化器进行[注册](https://www.eclipse.org/hono/docs/getting-started/#adding-a-device-to-the-tenant)，获得设备标识；
+3. 为设备[设置密码](https://www.eclipse.org/hono/docs/getting-started/#setting-a-password-for-the-device)；
+4. [下载官方示例应用](https://www.eclipse.org/downloads/download.php?file=/hono/hono-cli-2.3.0-exec.jar)，接收设备所发送的状态数据并给设备发送命令。
+
+完成以上准备工作后，我们来写一个设备网关(Device Gateway)连接净化器将其状态不断发布到Hono中。如下图所示。
+
+![](https://www.eclipse.org/hono/docs/concepts/connecting-devices/device-types.svg)
+
+
+
 To be continued ...
 
