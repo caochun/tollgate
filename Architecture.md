@@ -230,6 +230,39 @@ hono-cli/app/command> ow --tenant ${MY_TENANT} --device ${MY_DEVICE} -n setPower
 
 ### 数字孪生
 
+通过Hono我们实现了物理设备在信息空间的接入和管理，在此基础之上，我们要为设备建立一个独立的数字孪生对象。最简单的数字孪生对象可以理解为包含设备标识和其属性集合的数据对象，与面向对象中的“对象”类似。Ditto是实现数字孪生对象管理的开源平台，我们可以在Ditto上[创建数字孪生(Thing)](https://www.eclipse.org/ditto/protocol-examples-creatething.html)，也可以进行删除、修改等。
+
+在Ditto上创建一个数字孪生，例如我们定义小米净化器，可以给净化器做如下定义：
+
+```json
+{
+  "thingId": "my-tenant:my-airpurifier-1",
+  "features": {
+    "status": {
+      "properties": {
+        "power": {
+            "value": ""
+        },
+        "aqi": {
+            "value": 0
+        },
+        "fan": {
+            "value": 0
+        }
+        ...
+      } 
+    } 
+  }
+}
+```
+
+这个孪生的各个属性值可以由净化器对应的Hono网关采集，由Ditto连接Hono获取这些值，并更新孪生对象。如下图所示。
+
+![](https://www.eclipse.org/ditto/images/blog/2018-05-02-ditto-hono-digital-twin.png)
+
+此时Ditto就替代了之前Hono中的实例应用。
+
+Ditto官方也提供了沙盒系统供测试所有，但这个沙盒中并没有给测试用户权限去管理Ditto与Hono间的连接，所以我们需要自己部署Ditto。为降低部署复杂性，Eclipse提供了一个打包方案：[Cloud2Edge](https://www.eclipse.org/packages/packages/cloud2edge/)，只需要简单步骤即可在Kubernetes上部署运行完整的Hono+Ditto端到端系统。
 
 
 To be continued ...
