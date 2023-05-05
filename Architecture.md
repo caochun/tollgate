@@ -125,6 +125,111 @@
 
 ![](https://www.eclipse.org/hono/docs/concepts/connecting-devices/device-types.svg)
 
+该[网关](hono/gw_airpurifier.py)采用python编写。完成之前四步后，我们可以得到hono沙盒实例系统的地址和网络端口，以及我们创建的租户和设备标识。基于这些信息（以及认证等其他信息），我们可以创建一个MQTT的客户端，用以连接到Hono服务。
+
+```python
+import paho.mqtt.client as mqtt
+
+hono_mqtt_adaptor_host = "hono.eclipseprojects.io"
+hono_mqtt_adaptor_port = 8883
+
+device_id = "2a8f8cc9-1d89-4472-adb4-1a0ce4b47d57"
+tenant_id = "d63d9625-4069-476a-827b-7e605754a3d0"
+
+client = mqtt.Client(device_id)
+client.connect(host=hono_mqtt_adaptor_host, port=hono_mqtt_adaptor_port,
+               keepalive=60, bind_address="")
+```
+我们为`client`添加两个回调函数：
+```python
+import json
+
+def on_connect(client, userdata, flags, rc):
+    # Subscribing in on_connect() means that if we lose the connection and
+    # reconnect then subscriptions will be renewed.
+    client.subscribe("$SYS/#")
+    client.subscribe("command///req/#")
+
+
+def on_message(client, userdata, msg):
+    cmd = msg.topic.split("command///req//", 1)[1]
+    if cmd == "setPower":
+        param = json.loads(msg.payload)
+        print(param['power'])
+        if param['power'] == 'ON':
+            purifier.on()
+            print("Air Purifier is ON")
+        else:
+            purifier.off()
+            print("Air Purifier is OFF")
+
+client.on_connect = on_connect
+client.on_message = on_message
+```
+然后我们使用python的任务调度器，前者在连接成功时调用，在这个函数中我们向Hono服务端订阅命令消息；后者则在收到这些消息的时候进行响应，例如当前所实现的逻辑为从消息中解析命令并执行。
+
+命令执行过程中我们调用`purifier.on()`和`purifier.off()`，这个purifier对象是我们通过[python-miio](https://github.com/rytilahti/python-miio)这个包中实现的用以连接小米空气净化器的接口，使用起来非常方便。
+
+```python
+from miio.integrations.airpurifier.zhimi import airpurifier
+
+purifier = airpurifier.AirPurifier(
+    ip="192.168.80.148", token="acf8b3ced11c488f447b5a662ff3cd95")
+```
+
+这些完成后，我们即可启动python的调度器，定时从净化器上采集状态，并通过mqtt协议发布到hono的服务端。
+
+```python
+import schedule
+import time
+
+def pub_telemetry():
+    client.loop()
+    if client.is_connected():
+        result = client.publish("telemetry", json.dumps(
+            purifier.status().data, default=vars))
+        result.wait_for_publish()
+
+schedule.every(pub_interval).seconds.do(pub_telemetry)
+
+while True:
+    time.sleep(1)
+    schedule.run_pending()
+```
+
+其中的`pub_telemetry()`函数同样用`purifier`对象获得所有`status`并转为json数据对象发送出去。
+
+运行[这段代码](hono/gw_airpurifier.py)
+```bash
+python3 gw_airpurifier.py
+```
+
+在此按照官方文档启动示例应用，一方面我们可以从Hono服务上获得网管推送来的状态数据：
+```shell
+java -jar hono-cli-2.3.0-exec.jar app -H hono.eclipseprojects.io -P 9094 --ca-file /etc/ssl/certs/ca-certificates.crt -u hono -p hono-secret  consume --tenant ${MY_TENANT}
+
+t 2a8f8cc9-1d89-4472-adb4-1a0ce4b47d57 application/octet-stream {"power": "off", "aqi": 33, "average_aqi": 8, "humidity": 66, "temp_dec": 243, "mode": "idle", "favorite_level": 10, "filter1_life": 100, "f1_hour_used": 0, "use_time": 21138983, "motor1_speed": 0, "motor2_speed": null, "purify_volume": 233750, "f1_hour": 3500, "led": "on", "led_b": 0, "bright": null, "buzzer": "on", "child_lock": "off", "volume": null, "rfid_product_id": null, "rfid_tag": null, "act_sleep": null, "sleep_mode": "idle", "sleep_time": 80198, "sleep_data_num": null, "app_extra": 0, "act_det": null, "button_pressed": null} {orig_adapter=hono-mqtt, qos=0, device_id=2a8f8cc9-1d89-4472-adb4-1a0ce4b47d57, creation-time=1683268031119, traceparent=00-b69c387c00a66a04185f946eb97a7198-154e45c34df9ba28-01, content-type=application/octet-stream, orig_address=telemetry}
+e 2a8f8cc9-1d89-4472-adb4-1a0ce4b47d57 application/vnd.eclipse-hono-empty-notification - {orig_adapter=eclipse-hono-adapter-mqtt-5c9888d8c4-bjkfr_17bcd49248de_0, qos=1, device_id=2a8f8cc9-1d89-4472-adb4-1a0ce4b47d57, ttd=0, creation-time=1683268031811, traceparent=00-4989d9a282092f702c34cda3fbf2113f-2b7b9d0577e2ded4-01, content-type=application/vnd.eclipse-hono-empty-notification}
+...
+```
+
+另一方面我们可以以发送命令的模式运行它
+
+```bash
+java -jar hono-cli-2.3.0-exec.jar  app  -H hono.eclipseprojects.io -P 9094 --ca-file /etc/ssl/certs/ca-certificates.crt -u hono -p hono-secret command
+
+hono-cli/app/command> ow --tenant ${MY_TENANT} --device ${MY_DEVICE} -n setPower --payload '{"power": "ON"}'
+hono-cli/app/command> ow --tenant ${MY_TENANT} --device ${MY_DEVICE} -n setPower --payload '{"power": "OFF"}'
+ ```
+
+从而实现了基于Hono的设备接入管理。这边所使用的示例应用模拟了我们对设备状态获取和命令发送的应用系统，接下来我们把真实的应用纳入进来，也就是数字孪生系统。
+
+
+
+>你手头有什么设备？试着也来写个gateway吧。
+
+### 数字孪生
+
 
 
 To be continued ...
