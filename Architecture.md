@@ -224,6 +224,9 @@ hono-cli/app/command> ow --tenant ${MY_TENANT} --device ${MY_DEVICE} -n setPower
 
 从而实现了基于Hono的设备接入管理。这边所使用的示例应用模拟了我们对设备状态获取和命令发送的应用系统，接下来我们把真实的应用纳入进来，也就是数字孪生系统。
 
+### TODO: 车道设备网关
+
+### TODO：UI应用网关
 
 
 >你手头有什么设备？试着也来写个gateway吧。
@@ -264,6 +267,8 @@ hono-cli/app/command> ow --tenant ${MY_TENANT} --device ${MY_DEVICE} -n setPower
 
 Ditto官方也提供了沙盒系统供测试所有，但这个沙盒中并没有给测试用户权限去管理Ditto与Hono间的连接，所以我们需要自己部署Ditto。为降低部署复杂性，Eclipse提供了一个打包方案：[Cloud2Edge](https://www.eclipse.org/packages/packages/cloud2edge/)，只需要简单步骤即可在Kubernetes上部署运行完整的Hono+Ditto端到端系统。
 
+
+### TODO：Cloud2Edge下的数字孪生示例
 
 To be continued ...
 
