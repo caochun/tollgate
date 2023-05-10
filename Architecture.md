@@ -478,4 +478,41 @@ client.username_pw_set("f{auth_id}@{tenant_id}", device_pwd)
 设备通过`MQTT`客户端即可订阅和发布消息，从而参与到数字孪生系统中并完成对应的工作。下面，我们定义一个空气净化器的基本职责：
 + 每隔一段时间（如5分钟，向Cloud端推送空气指数和设备状态）。
 + 用户可以通过访问Cloud端获得设备状态。
-+ 用户可以通过访问Cloud端，远程控制设备的开启和关闭以及LED状态。用户对设备的更改应当收到回复作为确认。
++ 用户可以通过访问Cloud端，远程控制设备的开启和关闭以及LED状态。
+
+一个简单的实现可见[local_airpurifier.py](cloud2edge/local_airpurifier.py)。
+
+#### 用户：在Cloud端访问和控制Edge端设备
+
+在完成Cloud和Edge端服务搭建后，用户可以通过Cloud端提供的Restful服务直接获取设备状态和操作设备。下面给出几个空气净化器操作示例：
+
+获取设备状态：
+```bash
+curl -i -u ditto:ditto http://$DITTO_URL/api/2/things/org.i2ec:air-purifier
+```
+此时返回设备的运行状态：
+```json
+{
+  "thingId": "org.i2ec:air-purifier",
+  "policyId": "org.i2ec:air-purifier",
+  "features": {
+    "status": {
+      "properties": {
+        "power": {"value": "off"},
+        "aqi": {"value": 22},
+        "led": {"value": "on"},
+      }
+    }
+  },
+}
+```
+
+开启空气净化器：
+```bash
+curl -i -X POST -u ditto:ditto -H 'Content-Type: application/json' -w '\n' --data '{
+  "power": "on"
+}' http://$DITTO_URL/api/2/things/org.i2ec:air-purifier/inbox/messages/power?timeout=0
+```
+此时，Ditto会将信息传给Hono后经过MQTT将消息发送至设备，设备根据得到消息的负载执行开机操作。
+
+以上，我们利用Cloud2Edge制作了一个简单的空气净化器数字孪生。
