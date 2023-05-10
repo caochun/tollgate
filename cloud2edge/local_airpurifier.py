@@ -9,6 +9,7 @@ import schedule
 
 COMMAND_PREFIX: str = "/inbox/messages"
 POWER: str = "/power"
+LED: str = "/led"
 
 
 def parse_args() -> argparse.Namespace:
@@ -68,6 +69,16 @@ def on_command(
             print("Air Purifier is ON")
         else:
             print(f"Unknown power value: {value['power']}")
+    elif path == LED:
+        led: str = value["led"].lower()
+        if led == "off":
+            device.set_led(False)
+            print("LED is OFF")
+        elif led == "on":
+            device.set_led(True)
+            print("LED is ON")
+        else:
+            print(f"Unknown LED value: {value['led']}")
     else:
         print(f"Unknown command: {path}")
 
