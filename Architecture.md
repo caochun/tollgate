@@ -49,11 +49,11 @@
 
 其与传统桌面应用实现的业务架构相对比存在优势如下：
 
-|桌面应用架构|人机物融合架构|
-|---|---|
-|业务逻辑固化在桌面应用中 | 业务逻辑独立运行管理，便于修改管理|
-|设备直接被桌面应用访问，设备无法从外部进行管理|设备有其封装服务（或数字孪生）所代表，其状态可以自主上传，其接口可以独立访问|
-|业务与设备、操作员和其他信息服务间是静态绑定关系，无法更改| 业务与设备、操作员和服务能动态绑定，运行时可实现各种灵活跨车道业务过程|
+| 桌面应用架构                                               | 人机物融合架构                                                               |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| 业务逻辑固化在桌面应用中                                   | 业务逻辑独立运行管理，便于修改管理                                           |
+| 设备直接被桌面应用访问，设备无法从外部进行管理             | 设备有其封装服务（或数字孪生）所代表，其状态可以自主上传，其接口可以独立访问 |
+| 业务与设备、操作员和其他信息服务间是静态绑定关系，无法更改 | 业务与设备、操作员和服务能动态绑定，运行时可实现各种灵活跨车道业务过程       |
 
 ## 数字孪生
 
@@ -268,7 +268,214 @@ hono-cli/app/command> ow --tenant ${MY_TENANT} --device ${MY_DEVICE} -n setPower
 Ditto官方也提供了沙盒系统供测试所有，但这个沙盒中并没有给测试用户权限去管理Ditto与Hono间的连接，所以我们需要自己部署Ditto。为降低部署复杂性，Eclipse提供了一个打包方案：[Cloud2Edge](https://www.eclipse.org/packages/packages/cloud2edge/)，只需要简单步骤即可在Kubernetes上部署运行完整的Hono+Ditto端到端系统。
 
 
-### TODO：Cloud2Edge下的数字孪生示例
+### Cloud2Edge下的数字孪生示例
 
-To be continued ...
+下面，以`minikube`为例，我们搭建一个简易的Hono + Ditto端到端的数字孪生系统。
 
+#### Minikube集群搭建
+
+> 先决条件：
+> + 主机具有可以运行Linux容器的虚拟化引擎（如Docker、VirtualBox等）
+> + Minikube
+> + Helm包管理器
+> + kubectl集群管理工具
+
+[Minikube](https://minikube.sigs.k8s.io/docs/)是一个简易的k8s集群搭建工具，可以帮助我们以最快的速度搭建一个单机k8s集群。
+
+按照[说明文档](https://minikube.sigs.k8s.io/docs/start/)安装Minikube后，运行
+```bash
+minikube start [--addons ingress]
+kubectl config use-context minikube
+```
+其中`ingress`插件用于实现负载均衡，可以根据实际需求决定是否使用。若之后部署的集群服务使用`LoadBalancer`，则此处必须开启。
+
+部署完成后，可以通过`kubectl describe node`检查集群状态，确保正常后，执行：
+```bash
+export RELEASE=c2e
+export NS=cloud
+kubectl create ns $NS
+```
+此处设置了服务的名称和命名空间，为方便后续使用将它们提前导出环境变量。
+
+#### 服务部署
+
+此处，我们使用Eclipse官方提供的[Cloud2Edge]()包，该包可以通过Helm包管理器部署。集群搭建完成后，先添加软件源：
+```bash
+helm repo add eclipse-iot https://eclipse.org/packages/charts
+helm repo update
+```
+
+[可选]安装Cloud2Edge时，可以通过编辑`values.yaml`进行自定义设置，示例配置如下：
+```yaml
+# 定义示例数字孪生
+demoDevice:
+  tenant: "org.i2ec"
+  deviceId: "air-purifier"
+  password: "password"
+
+honoConnection:
+  username: "ditto-c2e"
+  password: "verysecret"
+
+# 连接类型，可选"kafka"或"amqp"
+hono:
+  messagingNetworkTypes:
+  - "kafka"
+
+  # 是否使用LoadBalancer服务
+  useLoadBalancer: false
+  kafka:
+    auth:
+      sasl:
+        jaas:
+          clientUsers:
+            - "hono"
+            - "ditto-c2e"
+          clientPasswords:
+            - "hono-secret"
+            - "verysecret"
+    externalAccess:
+      service:
+        type: "NodePort"
+
+# ditto服务设置
+ditto:
+  swaggerui:
+    enabled: false
+```
+该配置创建一个空气净化器的示例数字孪生，并配置了Hono和Ditto之间的Kafka连接。为简便起见，服务均使用`NodePort`方式部署。若要进行进一步自定义，可以参考完整的配置信息[`values.yaml`]()进行调整。
+
+软件源添加完成后，执行
+```bash
+helm upgrade --install -n $NS [-f values.yaml] --wait --timeout 150m $RELEASE eclipse-iot/cloud2edge
+```
+若没有自定义`values.yaml`，则不需要指定`-f`选项。由于指定了`--wait`，该命令会一直阻塞终端直至服务完全部署完成或超时失败；若遇到部署失败，重新执行该命令即可。
+
+部署完成后，执行`minikube service list`。若部署成功，则可以得到类似以下的输出：
+
+| NAMESPACE | NAME                            | TARGET PORT      | URL                       |
+| --------- | ------------------------------- | ---------------- | ------------------------- |
+| cloud     | c2e-adapter-amqp                | amqp/5672        | http://192.168.49.2:32672 |
+|           |                                 | amqps/5671       | http://192.168.49.2:32671 |
+| cloud     | c2e-adapter-http                | http/8080        | http://192.168.49.2:30080 |
+|           |                                 | https/8443       | http://192.168.49.2:30443 |
+| cloud     | c2e-adapter-mqtt                | mqtt/1883        | http://192.168.49.2:31883 |
+|           |                                 | secure-mqtt/8883 | http://192.168.49.2:30883 |
+| cloud     | c2e-ditto-gateway               | No node port     |                           |
+| cloud     | c2e-ditto-nginx                 | http/8080        | http://192.168.49.2:31024 |
+| cloud     | c2e-kafka                       | No node port     |                           |
+| cloud     | c2e-kafka-0-external            | tcp-kafka/9094   | http://192.168.49.2:32094 |
+| cloud     | c2e-kafka-headless              | No node port     |                           |
+| cloud     | c2e-service-auth                | No node port     |                           |
+| cloud     | c2e-service-command-router      | No node port     |                           |
+| cloud     | c2e-service-device-registry     | No node port     |                           |
+| cloud     | c2e-service-device-registry-ext | http/28080       | http://192.168.49.2:31080 |
+|           |                                 | https/28443      | http://192.168.49.2:31443 |
+| cloud     | c2e-zookeeper                   | No node port     |                           |
+| cloud     | c2e-zookeeper-headless          | No node port     |                           |
+| cloud     | ditto-mongodb                   | No node port     |                           |
+| ...       | ...                             |                  |                           |
+
+
+导出URL一列作为服务访问的环境变量，以供后续步骤使用：
+```bash
+export DITTO_URL=<$RELEASE-ditto-nginx url>
+export REGISTRY_URL=<$RELEASE-service-device-registry-ext http-url>
+export MQTT_ADAPTER_URL=<$RELEASE-adapter-http mqtt-url>
+```
+
+#### 自定义数字孪生
+
+服务部署完成后，即可添加实际的数字孪生实例。以空气净化器为例，我们使用服务部署时的`demo-device`作为数字孪生示例。
+
+首先为定义数字孪生模型：
+```bash
+curl -i -X PUT -u ditto:ditto -H 'Content-Type: application/json' --data '{
+  "features": {
+    "status": {
+      "properties": {
+        "power": {
+            "value": "off"
+        },
+        "aqi": {
+            "value": 0
+        },
+        "led": {
+            "value": "off"
+        }
+      } 
+    }
+  }
+}' http://$DITTO_URL/api/2/things/org.i2ec:air-purifier
+
+```
+
+添加完成后，可以验证一下：
+```bash
+curl -i -u ditto:ditto http://$DITTO_URL/api/2/things/org.i2ec:air-purifier
+```
+此时得到的输出应为：
+```
+HTTP/1.1 200 OK
+correlation-id: bc45c11f-03e1-4868-a3ff-1d8700058af8
+...
+
+{"thingId":"org.i2ec:air-purifier","policyId":"org.i2ec:air-purifier","features":{"status":{"properties":{"power":{"value":"off"},"aqi":{"value":0},"led":{"value":"off"}}}}}
+```
+
+若添加其他设备，则可以参考[文档](https://www.eclipse.org/packages/packages/cloud2edge/tour/)进行，该过程不算复杂，故不在此处重复。
+
+#### 设备端连接
+
+经过上几节的努力，我们已经完成了数字孪生系统在Cloud端的部署和自定义。本节，我们将以空气净化器为例完成Edge端设备逻辑代码的编写，使其能够完成现实中的任务。
+
+Edge端设备与Hono的连接是通过Adapter服务进行；该服务可以理解为一个Gateway，通过验证设备的`credentials`确定Cloud端与之对应的数字孪生，进而获取访问权限并建立通信。Adapter服务支持多种协议如`MQTT`、`AMQP`、`HTTP`等，但实际用法大同小异。其中，`MQTT`协议作为一个轻量的消息队列协议，在嵌入式领域具有广泛的应用；因此在本例中，我们使用`MQTT`作为示范。
+
+Edge端设备在创建时，会指定其`auth-id`和`password`。登陆Adapter时，用户名为`auth-id@tenant-id`，密码为`password`。
+```python
+device_id = "org.i2ec:air-purifier"
+auth_id = "air-purifier"
+tenant_id = "org.i2ec"
+device_pwd = "password"
+
+client = mqtt.Client(device_id)
+client.username_pw_set("f{auth_id}@{tenant_id}", device_pwd)
+```
+
+#### 设备端消息收发
+
+设备端的消息接收发送均需要满足[Ditto Protocol](https://www.eclipse.org/ditto/protocol-overview.html)。设备端接收和发送的消息可以分为`command event`、`command response`、`telemetry`三种。
+
+`command event`消息总为`application/json`类型，其大致内容为
+```json
+{
+    "topic": "<namespace>/<thingName>/things/<channel>/commands/<command>", // 包含ThingId和命令内容，此处也可以为消息
+    "path": "<path>", // 一般为更改的属性的json path
+    "value": "...", // command或消息的负载
+    "headers": {
+        "correlation-id": "..." // 对应command的correlation_id
+    }
+}
+```
+
+`command response`消息为Edge设备向Cloud发送的命令回复内容，其形式可以自定义；但需要在请求头中加入对应命令的`correlation-id`，用于ditto追溯客户端请求。具体地，一个`command response`大致内容为
+```json
+{
+  "topic": "...",
+  "path": "...", // 回复命令的topic和path，一般和原命令一致即可
+    "headers": {
+    "correlation-id": "xxx" // 需要回复的命令的correlation_id
+  },
+  "value": {
+    "starting-watering": true
+  }, // 此处value代表实际回复的负载
+  "status": 200 // 命令的执行状态码，语义参考HTTP状态码
+}
+```
+
+`telemetry`此处是相对Edge设备而言；相对Cloud端，设备发送的其实也是一种`command`，因此其内容与`command event`一致。
+
+设备通过`MQTT`客户端即可订阅和发布消息，从而参与到数字孪生系统中并完成对应的工作。下面，我们定义一个空气净化器的基本职责：
++ 每隔一段时间（如5分钟，向Cloud端推送空气指数和设备状态）。
++ 用户可以通过访问Cloud端获得设备状态。
++ 用户可以通过访问Cloud端，远程控制设备的开启和关闭以及LED状态。用户对设备的更改应当收到回复作为确认。
