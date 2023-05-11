@@ -261,6 +261,8 @@ compile_commands.json
 
 # End of https://www.toptal.com/developers/gitignore/api/qt,qtcreator
 
+# Python
+venv/
 **/__pycache__/*
 
 # pole-hono
