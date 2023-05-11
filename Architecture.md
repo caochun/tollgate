@@ -224,7 +224,67 @@ hono-cli/app/command> ow --tenant ${MY_TENANT} --device ${MY_DEVICE} -n setPower
 
 从而实现了基于Hono的设备接入管理。这边所使用的示例应用模拟了我们对设备状态获取和命令发送的应用系统，接下来我们把真实的应用纳入进来，也就是数字孪生系统。
 
-### TODO: 车道设备网关
+### 车道设备网关
+
+我们使用ctypes包来获取车道设备（以下，以抬杆pole为例）dll中的功能函数。
+```python
+from ctypes import *
+
+poleDLL = CDLL("./MockPole.dll")
+```
+对于返回类型是C/C++基本数据类型的函数，可直接利用dll中的函数名称对功能进行调用，并获得操作结果
+```python
+poleDLL.IO_UpAllPoles()
+poleDLL.IO_DownOnePole(id)
+```
+对于C/C++返回的类型是数组的函数，需要使用指针类型返回才能在python中被识别；为了知晓数组的长度，我们在dll中封装了如下数据类型：
+```C
+typedef struct poles {
+    int pole_status[100] = { 0 };
+    int pole_num = { 0 };
+}poles, *polesPtr;
+```
+一一对应地，我们在python中也定义该类型：
+```python
+class PoleStruct(Structure):
+    _fields_ = [("pole_status", c_int*100),    # 所有抬杆状态
+                ("pole_num", c_int)]           # 抬杆数量
+```
+这样，我们就可以用以下方式获得抬杆的数量、状态数组:
+```python
+class Pole:
+    def __get_pole_status(self):
+        poleDLL.IO_GetPoleStatus.restype = POINTER(PoleStruct)    # 设置从dll中获取抬杆状态函数的返回结果类型
+        tempdata = poleDLL.IO_GetPoleStatus()
+        pole_num = tempdata.contents.pole_num
+        poles_list = []
+        for i in range(pole_num):
+            poles_list.append(tempdata.contents.pole_status[i])
+        return poles_list, pole_num
+```
+进一步地，对Pole的相关操作函数进行封装，对获取的Pole状态进行json样式的封装，可得到[这段代码](pole-hono/Pole.py)。
+
+与空气净化器示例类似，我们可以得到[抬杆pole网关代码](pole-hono/main.py)，并运行:
+```bash
+cd pole-hono
+python main.py
+```
+一方面我们可以从Hono服务上获得网关定时推送来的抬杆状态数据：
+```shell
+java -jar hono-cli-2.3.0-exec.jar app -H hono.eclipseprojects.io -P 9094 --ca-file /etc/ssl/certs/ca-certificates.crt -u hono -p hono-secret  consume --tenant ${MY_TENANT}
+
+t 8eeee125-eaf7-4ccc-a14d-c7fea4f94c2b application/octet-stream {"timestamp": "2023-05-10 21:41:11", "poles": [{"id": 0, "status": 1}, {"id": 1, "status": 1}, {"id": 2, "status": 1}, {"id": 3, "status": 0}, {"id": 4, "status": 0}, {"id": 5, "status": 1}, {"id": 6, "status": 1}, {"id": 7, "status": 1}, {"id": 8, "status": 0}]} {orig_adapter=hono-mqtt, qos=0, device_id=8eeee125-eaf7-4ccc-a14d-c7fea4f94c2b, creation-time=1683726069268, traceparent=00-f7afcf048052aec94ec9f32ffb258513-78aa9aaf0b8aca1e-01, content-type=application/octet-stream, orig_address=telemetry}
+...
+```
+另一方面我们可以以发送命令的模式运行它，并改变抬杆的状态：
+
+```bash
+java -jar hono-cli-2.3.0-exec.jar  app  -H hono.eclipseprojects.io -P 9094 --ca-file /etc/ssl/certs/ca-certificates.crt -u hono -p hono-secret command
+
+hono-cli/app/command> ow --tenant ${MY_TENANT} --device ${MY_DEVICE} -n setStatus --payload '{"status":"UP", "id":2}'
+hono-cli/app/command> ow --tenant ${MY_TENANT} --device ${MY_DEVICE} -n setStatus --payload '{"status":"DOWN"}'
+ ```
+从而实现了抬杆设备的数字孪生。
 
 ### TODO：UI应用网关
 
