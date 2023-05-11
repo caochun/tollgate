@@ -267,3 +267,6 @@ venv/
 
 # pole-hono
 !pole-hono/*.dll
+
+### CA-Certificates
+control-panel/ca-certificates.crt

@@ -286,7 +286,95 @@ hono-cli/app/command> ow --tenant ${MY_TENANT} --device ${MY_DEVICE} -n setStatu
  ```
 从而实现了抬杆设备的数字孪生。
 
-### TODO：UI应用网关
+### UI应用网关
+
+我们使用pyqt来实现控制应用的GUI界面，该界面包含4个标签页：
+
+- 车辆信息
+- 读卡信息
+- 收费处理
+- 抬杆管理
+
+车辆信息界面可用于系统识别车辆后展示车辆的相关信息和摄像头拍摄到的车辆信息，以确认相关信息是否正确。
+
+读卡信息界面可用于展示查询车辆ETC卡片得到的相关信息，由此，在车辆存在异常信息时（例如车辆部分信息不相符、存在违章等），还可以由管理人员手动进行相关操作。
+
+收费处理界面可用于处理车辆收费相关操作。
+
+抬杆管理界面展示各车道的杆子状态（抬起或落下），并可以手动控制每个车道杆的状态。
+
+通过上一步完成的车道设备网关，我们可以修改部分函数，用于获取车道信息并以Python内的对象进行返回。
+
+使用如下pyqt的信号-槽，在接收数据时可以通过向信号发送消息，经由槽接收并更新UI界面显示的内容：
+
+```python
+class poleSignals(QObject):
+    poleStatusUpdate = pyqtSignal(list)
+```
+
+首先，在连接时订阅telemetry数据推送：
+
+```python
+def on_connect(self, client, userdata, flags, rc):
+    client.subscribe("$SYS/#")
+    client.subscribe("telemetry/" + self.tenant_id)
+```
+
+在接收到数据时，向定义的信号发送消息：
+
+```python
+ def on_message(self, client, userdata, msg):
+    param = json.loads(msg.payload)
+    self.poleSignal.poleStatusUpdate.emit(param)
+```
+
+为对应的UI组件定义槽函数：
+
+```python
+def __init__():
+    ...
+    self.poleSignal.poleStatusUpdate.connect(self.dataUpdate)
+    ...
+
+@pyqtSlot(list)
+def dataUpdate(self, value):
+    for pole in value:
+        self.findChild(QWidget).findChild(QWidget, f'pole{pole["id"]}').findChild(QLabel).setText(
+            f'{pole["id"]}号杆: {"抬起" if pole["status"] == "1" else "落下"}'
+        )
+```
+
+通过点击按钮，我们可以切换车道杆的状态：
+
+```python
+def __init__():
+    ...
+    self.upAll.clicked.connect(lambda: self.on_click_all('UP'))
+    self.downAll.clicked.connect(lambda: self.on_click_all('DOWN'))
+    for pole in self.poleStatus:
+        button = QPushButton('切换')
+        button.clicked.connect(lambda: self.on_click(pole["id"]))
+        ...
+
+def on_click(self, pole_num):
+    self.client.loop()
+    if self.client.is_connected():
+        result = self.client.publish(f"command/{self.tenant_id}/{self.device_id}/req//setStatus", json.dumps(
+            { 'id': pole_num, 'status': 'DOWN' if self.poleStatus[pole_num]['status'] == '1' else 'UP' }
+        ))
+        result.wait_for_publish()
+    
+def on_click_all(self, status):
+    self.client.loop()
+    if self.client.is_connected():
+        result = self.client.publish(f"command/{self.tenant_id}/{self.device_id}/req//setStatus", json.dumps(
+            { 'status': status }
+        ))
+        result.wait_for_publish()
+
+```
+
+从而实现了UI应用的数字孪生。
 
 
 >你手头有什么设备？试着也来写个gateway吧。
