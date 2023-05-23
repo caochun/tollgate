@@ -5,24 +5,29 @@ import ssl
 import json
 from Pole import Pole
 
-hono_mqtt_adaptor_host = "hono.eclipseprojects.io"
-hono_mqtt_adaptor_port = 8883
+ditto_mqtt_adaptor_host = "ditto_host_ip"    # 运行前须修改
+ditto_mqtt_adaptor_port = 31883
 
-device_id = "8eeee125-eaf7-4ccc-a14d-c7fea4f94c2b"
-tenant_id = "04c8405b-bb66-4b03-b823-e3117108b9b2"
+thing_id = "org.i2ec:poles"
+device_id = "org.i2ec:poles"
+auth_id = "poles"
+tenant_id = "org.i2ec"
 device_pwd = "your-pwd"        # 运行前须修改
 
-pub_interval = 3  # seconds
+pub_interval = 20  # seconds
 
 pole = Pole()
 
 
 def pub_telemetry():
-    client.loop()
-    if client.is_connected():
-        result = client.publish("telemetry", json.dumps(
-            pole.get_status(), default=vars))
-        result.wait_for_publish()
+    payload = pole.get_status()
+    command = {
+        "topic": thing_id.replace(":", "/") + "/things/twin/commands/modify",
+        "value": payload,
+        "path": "/features/polestatus/properties",
+        "headers": {},
+    }
+    client.publish("telemetry", json.dumps(command, default=vars))
 
 
 def on_connect(client, userdata, flags, rc):
@@ -33,37 +38,41 @@ def on_connect(client, userdata, flags, rc):
 
 
 def on_message(client, userdata, msg):
-    cmd = msg.topic.split("command///req//", 1)[1]
-    if cmd == "setStatus":
-        param = json.loads(msg.payload)
-        status = param.get('status')
-        id = param.get('id')
-        if status == 'UP':
-            if id is not None:
-                if id in range(0, pole.pole_num):
-                    pole.up_one(id)
-            else:
-                pole.up_all()
-        elif param['status'] == 'DOWN':
-            if id is not None:
-                if id in range(0, pole.pole_num):
-                    pole.down_one(id)
-            else:
-                pole.down_all()
+    payload = json.loads(msg.payload)
+    print(payload)
+    path = payload["path"]
+    if path.startswith("/inbox/messages"):
+        cmd = path.removeprefix("/inbox/messages")
+        if cmd == "/setstatus":
+            param = payload["value"]
+            status = param.get('status')
+            id = param.get('id')
+            if status == 'UP':
+                if id is not None:
+                    if id in range(0, pole.pole_num):
+                        pole.up_one(id)
+                else:
+                    pole.up_all()
+            elif status == 'DOWN':
+                if id is not None:
+                    if id in range(0, pole.pole_num):
+                        pole.down_one(id)
+                else:
+                    pole.down_all()
+            pub_telemetry()
 
 
 if __name__ == '__main__':
-    client = mqtt.Client(device_id)
-    client.username_pw_set(device_id+"@"+tenant_id, device_pwd)
-    client.tls_set('./ca-certificates.crt',
-                   tls_version=ssl.PROTOCOL_TLSv1_2)
-    client.connect(host=hono_mqtt_adaptor_host, port=hono_mqtt_adaptor_port,
-                   keepalive=60, bind_address="")
+    client = mqtt.Client()
+    client.username_pw_set(auth_id+"@"+tenant_id, device_pwd)
     client.on_connect = on_connect
     client.on_message = on_message
+    client.connect(host=ditto_mqtt_adaptor_host, port=ditto_mqtt_adaptor_port,
+                   keepalive=60, bind_address="")
 
     schedule.every(pub_interval).seconds.do(pub_telemetry)
 
     while True:
+        client.loop()
         time.sleep(1)
         schedule.run_pending()

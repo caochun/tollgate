@@ -264,25 +264,50 @@ class Pole:
 ```
 进一步地，对Pole的相关操作函数进行封装，对获取的Pole状态进行json样式的封装，可得到[这段代码](pole-hono/Pole.py)。
 
-与空气净化器示例类似，我们可以得到[抬杆pole网关代码](pole-hono/main.py)，并运行:
+与空气净化器示例类似，我们将poles接入ditto中，并使用ditto的url格式定时上报状态，并订阅控制（修改抬杆的状态）命令。具体地，
+
+定时上报抬杆状态并修改ditto中的数字孪生，使用到[官网示例1](https://www.eclipse.org/ditto/protocol-examples-modifyproperties.html)和[官网示例2](https://www.eclipse.org/ditto/protocol-specification-things-create-or-modify.html)中形如`<namespace>/<thingName>/things/<channel>/commands/modify`的topic，实现`pub_telemetry`函数：
+```python
+def pub_telemetry():
+    payload = pole.get_status()
+    command = {
+        "topic": thing_id.replace(":", "/") + "/things/twin/commands/modify",
+        "value": payload,
+        "path": "/features/polestatus/properties",
+        "headers": {},
+    }
+    client.publish("telemetry", json.dumps(command, default=vars))
+```
+
+控制（修改抬杆的状态）命令，则使用[官网示例](https://www.eclipse.org/ditto/protocol-specification-things-messages.html)中`/inbox/messages/{messageSubject}`的`messages path`并根据`messageSubject`和json负载加以判断，修改抬杆的数字孪生状态和物理设备状态。
+
+最终，我们可以得到[抬杆pole网关代码](pole-hono/main.py)，并运行:
 ```bash
 cd pole-hono
 python main.py
 ```
-一方面我们可以从Hono服务上获得网关定时推送来的抬杆状态数据：
+一方面我们可以使用ditto的http API从ditto服务中获取hono定时收集来的抬杆状态数据：
 ```shell
-java -jar hono-cli-2.3.0-exec.jar app -H hono.eclipseprojects.io -P 9094 --ca-file /etc/ssl/certs/ca-certificates.crt -u hono -p hono-secret  consume --tenant ${MY_TENANT}
+curl -u ditto:ditto http://$DITTO_URL/api/2/things/org.i2ec:poles
 
-t 8eeee125-eaf7-4ccc-a14d-c7fea4f94c2b application/octet-stream {"timestamp": "2023-05-10 21:41:11", "poles": [{"id": 0, "status": 1}, {"id": 1, "status": 1}, {"id": 2, "status": 1}, {"id": 3, "status": 0}, {"id": 4, "status": 0}, {"id": 5, "status": 1}, {"id": 6, "status": 1}, {"id": 7, "status": 1}, {"id": 8, "status": 0}]} {orig_adapter=hono-mqtt, qos=0, device_id=8eeee125-eaf7-4ccc-a14d-c7fea4f94c2b, creation-time=1683726069268, traceparent=00-f7afcf048052aec94ec9f32ffb258513-78aa9aaf0b8aca1e-01, content-type=application/octet-stream, orig_address=telemetry}
-...
+{"thingId":"org.i2ec:poles","policyId":"org.i2ec:poles","features":{"polestatus":{"properties":{"timestamp":"2023-05-22 20:39:58","poles":[{"id":0,"status":0},{"id":1,"status":0},{"id":2,"status":0},{"id":3,"status":0},{"id":4,"status":0},{"id":5,"status":0},{"id":6,"status":0},{"id":7,"status":0},{"id":8,"status":0}]}}}}
 ```
-另一方面我们可以以发送命令的模式运行它，并改变抬杆的状态：
+另一方面我们可以发送命令，改变抬杆的状态：
 
 ```bash
-java -jar hono-cli-2.3.0-exec.jar  app  -H hono.eclipseprojects.io -P 9094 --ca-file /etc/ssl/certs/ca-certificates.crt -u hono -p hono-secret command
+curl -i -X POST -u ditto:ditto -H 'Content-Type: application/json' -w '\n' --data '{"status": "UP", "id": 3}' http://$DITTO_URL/api/2/things/org.i2ec:poles/inbox/messages/setstatus?timeout=0
 
-hono-cli/app/command> ow --tenant ${MY_TENANT} --device ${MY_DEVICE} -n setStatus --payload '{"status":"UP", "id":2}'
-hono-cli/app/command> ow --tenant ${MY_TENANT} --device ${MY_DEVICE} -n setStatus --payload '{"status":"DOWN"}'
+curl -i -X POST -u ditto:ditto -H 'Content-Type: application/json' -w '\n' --data '{"status": "DOWN"}' http://$DITTO_URL/api/2/things/org.i2ec:poles/inbox/messages/setstatus?timeout=0
+
+# 显示以下内容则表示成功接收
+HTTP/1.1 202 Accepted
+Server: nginx/1.23.1
+Date: Mon, 22 May 2023 12:43:52 GMT
+Content-Length: 0
+Connection: keep-alive
+Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Expose-Headers: *
  ```
 从而实现了抬杆设备的数字孪生。
 
