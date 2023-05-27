@@ -6,7 +6,7 @@
         <groupId>com.example</groupId>
         <artifactId>tollgate</artifactId>
         <version>0.0.1</version>
-        <relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
+        <relativePath>../../pom.xml</relativePath> <!-- lookup parent from repository -->
     </parent>
     <artifactId>validating-service</artifactId>
     <name>validating-service</name>

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.example</groupId>
         <artifactId>tollgate</artifactId>
         <version>0.0.1</version>
-        <relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
+        <relativePath>../../pom.xml</relativePath> <!-- lookup parent from repository -->
     </parent>
-    <artifactId>billing-service</artifactId>
-    <name>billing-service</name>
-    <description>Billing Service for Tollgate</description>
+    <artifactId>recognizing-service</artifactId>
+    <name>recognizing-service</name>
+    <description>Recognizing Service for Tollgate</description>
 
     <dependencies>
         <dependency>
@@ -23,9 +23,7 @@
             <version>0.0.1</version>
             <scope>compile</scope>
         </dependency>
-
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -34,4 +32,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>
