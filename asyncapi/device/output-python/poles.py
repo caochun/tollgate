@@ -1,4 +1,4 @@
-from pole import Pole
+from poleGetStatus import Pole
 
 class Poles:
     def __init__(self, pole_num):
