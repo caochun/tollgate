@@ -14,53 +14,66 @@ servers:
     url: mqtt://localhost
     protocol: mqtt
 channels:
-  pole/setstatus:
+  pole.setStatus:
     publish:
       summary: Set pole status.
       operationId: onPoleSetStatus
-      message:
-        name: PoleSetStatus
-        payload:
-          type: object
-          properties:
-            id:
-              type: integer
-              minimum: 0
-              description: Id of the pole.
-            status:
-              type: integer
-              minimum: 0
-              maximum: 1
-              description: 0 represents pole down, 1 represents pole up.
-            sentAt:
-              type: string
-              format: date-time
-              description: Date and time when the message was sent.
-  pole/getstatus:
+      message: 
+        $ref: "#/components/messages/poleSetStatus"
+  pole.getStatus:
     subscribe:
       summary: Get pole status.
       operationId: onPoleGetStatus
-      message:
-        name: PoleGetStatus
-        payload:
-          type: object
-          properties:
-            poles:
-              type: array
-              items:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    minimum: 0
-                    description: Id of the pole.
-                  status:
-                    type: integer
-                    minimum: 0
-                    maximum: 1
-                    description: 0 represents pole down, 1 represents pole up.
-            sentAt:
-              type: string
-              format: date-time
-              description: Date and time when the message was sent.
+      message: 
+        $ref: "#/components/messages/poleGetStatus"
+components:
+  messages:
+    poleSetStatus:
+      name: poleSetStatus
+      payload:
+        $ref: "#/components/schemas/poleSetStatus"
+    poleGetStatus:
+      name: poleGetStatus
+      payload:
+        $ref: "#/components/schemas/poleGetStatus"
+  schemas:
+    poleSetStatus:
+      type: object
+      properties:
+        id:
+          type: integer
+          minimum: 0
+          description: Id of the pole.
+        status:
+          type: integer
+          minimum: 0
+          maximum: 1
+          description: 0 represents pole down, 1 represents pole up.
+        sentAt:
+          $ref: "#/components/schemas/sentAt"
+    poleGetStatus:
+      type: object
+      properties:
+        poles:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                minimum: 0
+                description: Id of the pole.
+              status:
+                type: integer
+                minimum: 0
+                maximum: 1
+                description: 0 represents pole down, 1 represents pole up.
+        sentAt:
+          $ref: "#/components/schemas/sentAt"      
+    sentAt:
+      type: string
+      format: date-time
+      description: Date and time when the message was sent.
+
+          
             

@@ -5,7 +5,10 @@ import time
 
 import messaging
 
-from payload import SetStatusPayload, GetStatusPayload
+from poleSetStatus import PoleSetStatus
+from poleGetStatus import PoleGetStatus
+from sentAt import SentAt
+
 from poles import Poles
 
 station_poles = Poles(9)
@@ -18,19 +21,13 @@ def getConfig():
     return config
 
 
-def poleSetstatus(client, userdata, msg):
+def poleSetStatus(client, userdata, msg):
     jsonString = msg.payload.decode('utf-8')
     logging.info('Received json: ' + jsonString)
-    payload = SetStatusPayload.from_json(jsonString)
-    logging.info('Received message: ' + str(payload))
-    station_poles.set_pole_status(payload.id, payload.status)
+    poleSetStatus = PoleSetStatus.from_json(jsonString)
+    logging.info('Received message: ' + str(poleSetStatus))
+    station_poles.set_pole_status(poleSetStatus.id, poleSetStatus.status)
 
-
-def get_timestamp():
-    now = int(time.time())
-    time_array = time.localtime(now)
-    time_style = time.strftime('%Y-%m-%d %H:%M:%S', time_array)
-    return time_style
 
 
 def main():
@@ -38,14 +35,14 @@ def main():
     logging.info('Start of main.')
     config = getConfig()
 
-    poleSetstatusMessenger = messaging.Messaging(config, 'pole/setstatus', poleSetstatus)
-    poleSetstatusMessenger.loop_start()
-    poleGetstatusMessenger = messaging.Messaging(config)
-
+    poleSetStatusMessenger = messaging.Messaging(config, 'pole.setStatus', poleSetStatus)
+    poleSetStatusMessenger.loop_start()
+    poleGetStatusMessenger = messaging.Messaging(config)
+    
     while (True):
-        payload = GetStatusPayload(station_poles.to_poles_list(), get_timestamp())
+        payload = PoleGetStatus(station_poles.to_poles_list(), SentAt.get_timestamp())
         payloadJson = payload.to_json()
-        poleGetstatusMessenger.publish('pole/getstatus', payloadJson)
+        poleGetStatusMessenger.publish('pole.getStatus', payloadJson)
         time.sleep(1)
 
 if __name__ == '__main__':
