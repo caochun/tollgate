@@ -1,4 +1,6 @@
-# Step 1. 根据官网tutorial下载相关包
+# 基于Asyncapi的事件驱动服务代码框架自动生成
+
+## Step 1. 根据官网tutorial下载相关包
 
 [依赖包安装tutorial](https://www.asyncapi.com/docs/tutorials/generate-code)
 
@@ -8,14 +10,14 @@
 npm install -g @asyncapi/generator
 ```
 
-# Step 2. 启动mqtt broker
+## Step 2. 启动mqtt broker
 
 可以使用docker镜像，也可以使用ditto中的mqtt服务。
 ```sh
 docker run -it -p 31883:1883 eclipse-mosquitto
 ```
 
-# Step 3. 根据规范编写asyncapi yaml
+## Step 3. 根据规范编写asyncapi yaml
 
 [Studio Example](https://studio.asyncapi.com/)
 
@@ -48,20 +50,20 @@ components:
             description: 0 represents pole down, 1 represents pole up.     
 ```
 
-# Step 4. 使用asyncapi generator生成代码框架（code framework）
-## 使用默认模板：
+## Step 4. 使用asyncapi generator生成代码框架（code framework）
+### 使用默认模板：
 ```sh
 ag ./asyncapi.yaml -o output-python @asyncapi/python-paho-template
 ```
 
-## 使用自定义模板：
+### 使用自定义模板：
 fork基础模板，然后提交commit修改模板，使用如下命令生成代码框架：
 ```sh
 ag ./asyncapi.yaml https://github.com/Changri-Liuhen/python-paho-template -o output-python
 ```
 或
 
-使用本地的代码模板：
+### 使用本地的代码模板：
 ```sh
 ag ./asyncapi.yaml ./ -o output-python
 ```
@@ -69,14 +71,14 @@ ag ./asyncapi.yaml ./ -o output-python
 > 具体的方案、命令行可参考[asyncapi/template-for-generator-templates](https://github.com/asyncapi/template-for-generator-templates)的库，包括生成全新的代码模板。
 
 
-# Step 5. 按照业务逻辑补充和修改代码框架，并运行
-## nodejs:
+## Step 5. 按照业务逻辑补充和修改代码框架，并运行
+### nodejs:
 ```sh
 npm install
 
 npm start
 ```
-## python:
+### python:
 ```sh
 python3 main.py
 ```
